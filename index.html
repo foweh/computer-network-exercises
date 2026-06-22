@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>计算机网络习题练习 - 完整版</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); min-height: 100vh; padding-bottom: 100px; }
+        .container { max-width: 900px; margin: 0 auto; padding: 15px; }
+        .header { background: rgba(255,255,255,0.95); border-radius: 16px; padding: 18px; margin-bottom: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+        .header h1 { text-align: center; color: #333; font-size: 22px; margin-bottom: 10px; }
+        .stats-bar { display: flex; justify-content: space-around; flex-wrap: wrap; gap: 8px; }
+        .stat-item { text-align: center; padding: 8px 12px; background: #f8f9fa; border-radius: 8px; min-width: 70px; }
+        .stat-label { font-size: 11px; color: #666; }
+        .stat-value { font-size: 18px; font-weight: bold; color: #667eea; }
+        .nav-tabs { display: flex; background: rgba(255,255,255,0.95); border-radius: 16px; padding: 8px; margin-bottom: 15px; overflow-x: auto; }
+        .nav-tab { flex: 1; text-align: center; padding: 10px 5px; border-radius: 10px; cursor: pointer; font-weight: 500; color: #666; transition: all 0.3s; font-size: 13px; white-space: nowrap; }
+        .nav-tab.active { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .question-card { background: rgba(255,255,255,0.95); border-radius: 16px; padding: 20px; margin-bottom: 15px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+        .question-header { display: flex; align-items: center; margin-bottom: 12px; }
+        .question-type { padding: 3px 10px; border-radius: 15px; font-size: 11px; font-weight: 500; margin-right: 8px; }
+        .type-choice { background: #e3f2fd; color: #1976d2; }
+        .type-judge { background: #e8f5e9; color: #388e3c; }
+        .type-fill { background: #fff3e0; color: #f57c00; }
+        .type-calc { background: #fce4ec; color: #c2185b; }
+        .type-explain { background: #e8eaf6; color: #303f9f; }
+        .type-short { background: #f3e5f5; color: #7b1fa2; }
+        .question-number { font-weight: 600; color: #333; font-size: 14px; }
+        .question-content { font-size: 15px; line-height: 1.7; color: #333; margin-bottom: 14px; white-space: pre-wrap; }
+        .options { list-style: none; }
+        .option-item { padding: 10px 12px; margin-bottom: 8px; border: 2px solid #e0e0e0; border-radius: 8px; cursor: pointer; transition: all 0.3s; font-size: 14px; display: flex; align-items: center; }
+        .option-item:hover { border-color: #667eea; background: #f5f3ff; }
+        .option-item.selected { border-color: #667eea; background: #e8eaf6; }
+        .option-item.correct { border-color: #4caf50; background: #e8f5e9; }
+        .option-item.incorrect { border-color: #f44336; background: #ffebee; }
+        .option-label { width: 26px; height: 26px; border-radius: 50%; background: #eee; display: flex; align-items: center; justify-content: center; margin-right: 10px; font-weight: 600; color: #666; font-size: 13px; }
+        .option-item.selected .option-label { background: #667eea; color: white; }
+        .option-item.correct .option-label { background: #4caf50; color: white; }
+        .option-item.incorrect .option-label { background: #f44336; color: white; }
+        .fill-input { width: 100%; padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; font-size: 15px; transition: all 0.3s; margin-bottom: 8px; }
+        .fill-input:focus { outline: none; border-color: #667eea; }
+        .fill-input.correct { border-color: #4caf50; background: #e8f5e9; }
+        .fill-input.incorrect { border-color: #f44336; background: #ffebee; }
+        .calc-textarea, .short-textarea { width: 100%; min-height: 120px; padding: 12px; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 14px; font-family: inherit; resize: vertical; }
+        .calc-textarea:focus, .short-textarea:focus { outline: none; border-color: #667eea; }
+        .answer-section { margin-top: 14px; padding-top: 14px; border-top: 1px solid #eee; }
+        .answer-label { font-weight: 600; color: #667eea; margin-bottom: 6px; display: block; font-size: 14px; }
+        .answer-content { color: #333; line-height: 1.7; font-size: 14px; white-space: pre-wrap; }
+        .action-buttons { display: flex; gap: 10px; margin-top: 16px; flex-wrap: wrap; }
+        .btn { padding: 10px 20px; border: none; border-radius: 8px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s; }
+        .btn-primary { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(102,126,234,0.4); }
+        .btn-secondary { background: #f0f0f0; color: #333; }
+        .btn-danger { background: #f44336; color: white; }
+        .btn-success { background: #4caf50; color: white; }
+        .progress-bar { width: 100%; height: 6px; background: #e0e0e0; border-radius: 3px; margin-bottom: 15px; overflow: hidden; }
+        .progress-fill { height: 100%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 3px; transition: width 0.5s; }
+        .progress-info { text-align: center; color: #fff; margin-bottom: 8px; font-weight: 500; font-size: 14px; }
+        .category-filter { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 15px; }
+        .category-btn { padding: 6px 12px; border: 2px solid rgba(255,255,255,0.5); background: rgba(255,255,255,0.2); color: white; border-radius: 15px; font-size: 12px; cursor: pointer; transition: all 0.3s; }
+        .category-btn.active { background: white; color: #667eea; }
+        .result-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; z-index: 1000; display: none; }
+        .result-modal.active { display: flex; }
+        .result-content { background: white; border-radius: 16px; padding: 25px; max-width: 360px; width: 85%; text-align: center; animation: fadeIn 0.3s; }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.9); } to { opacity: 1; transform: scale(1); } }
+        .result-icon { width: 70px; height: 70px; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 15px; font-size: 35px; }
+        .result-icon.success { background: #e8f5e9; color: #4caf50; }
+        .result-icon.error { background: #ffebee; color: #f44336; }
+        .result-title { font-size: 22px; font-weight: 600; margin-bottom: 8px; color: #333; }
+        .result-text { color: #666; margin-bottom: 18px; font-size: 14px; }
+        .empty-state { text-align: center; padding: 50px 20px; color: white; }
+        .footer { position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(255,255,255,0.98); padding: 12px; box-shadow: 0 -4px 20px rgba(0,0,0,0.1); display: flex; justify-content: space-around; z-index: 100; }
+        .footer-btn { display: flex; flex-direction: column; align-items: center; color: #666; cursor: pointer; transition: all 0.3s; }
+        .footer-btn.active { color: #667eea; }
+        .footer-btn span:first-child { font-size: 22px; margin-bottom: 3px; }
+        .footer-btn span:last-child { font-size: 11px; }
+        @media (max-width: 768px) {
+            .container { padding: 8px; }
+            .header h1 { font-size: 18px; }
+            .question-card { padding: 14px; }
+            .question-content { font-size: 14px; }
+            .option-item { padding: 8px 10px; font-size: 13px; }
+            .btn { padding: 8px 16px; font-size: 13px; }
+            .nav-tab { font-size: 12px; padding: 8px 3px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📚 计算机网络习题练习</h1>
+            <div class="stats-bar">
+                <div class="stat-item"><div class="stat-label">已做题目</div><div class="stat-value" id="total-done">0</div></div>
+                <div class="stat-item"><div class="stat-label">正确率</div><div class="stat-value" id="accuracy">0%</div></div>
+                <div class="stat-item"><div class="stat-label">错题数量</div><div class="stat-value" id="wrong-count">0</div></div>
+                <div class="stat-item"><div class="stat-label">连续正确</div><div class="stat-value" id="streak">0</div></div>
+            </div>
+        </div>
+
+        <div class="progress-info" id="progress-info">练习进度: 0/0</div>
+        <div class="progress-bar"><div class="progress-fill" id="progress-fill"></div></div>
+
+        <div class="category-filter" id="category-filter">
+            <button class="category-btn active" data-category="all">全部</button>
+            <button class="category-btn" data-category="名词解释">名词解释</button>
+            <button class="category-btn" data-category="填空">填空</button>
+            <button class="category-btn" data-category="选择">选择</button>
+            <button class="category-btn" data-category="判断">判断</button>
+            <button class="category-btn" data-category="计算">计算</button>
+            <button class="category-btn" data-category="简答">简答</button>
+        </div>
+
+        <div class="nav-tabs">
+            <div class="nav-tab active" data-tab="practice">📝 练习</div>
+            <div class="nav-tab" data-tab="review">📖 错题</div>
+            <div class="nav-tab" data-tab="random">🎲 随机</div>
+            <div class="nav-tab" data-tab="stats">📊 统计</div>
+        </div>
+
+        <div class="tab-content active" id="practice-tab"><div id="question-list"></div></div>
+        <div class="tab-content" id="review-tab"><div id="wrong-list"></div><div class="empty-state" id="wrong-empty" style="display:none;"><h3>🎉 太棒了！</h3><p>错题本为空</p></div></div>
+        <div class="tab-content" id="random-tab"><div id="random-list"></div><button class="btn btn-primary" onclick="loadRandomQuestions()" style="margin-top:15px;">🔄 重新随机</button></div>
+        <div class="tab-content" id="stats-tab">
+            <div class="question-card">
+                <h3 style="margin-bottom:18px;color:#667eea;">📊 学习统计</h3>
+                <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:12px;">
+                    <div class="stat-item"><div class="stat-label">总练习次数</div><div class="stat-value" id="stats-total">0</div></div>
+                    <div class="stat-item"><div class="stat-label">累计正确</div><div class="stat-value" id="stats-correct">0</div></div>
+                    <div class="stat-item"><div class="stat-label">累计错误</div><div class="stat-value" id="stats-wrong">0</div></div>
+                    <div class="stat-item"><div class="stat-label">最高连续正确</div><div class="stat-value" id="stats-max-streak">0</div></div>
+                </div>
+                <div style="margin-top:18px;">
+                    <h4 style="color:#333;margin-bottom:12px;">📈 各类型正确率</h4>
+                    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;">
+                        <div class="stat-item"><div class="stat-label">名词解释</div><div class="stat-value" id="stats-explain-acc">0%</div></div>
+                        <div class="stat-item"><div class="stat-label">填空题</div><div class="stat-value" id="stats-fill-acc">0%</div></div>
+                        <div class="stat-item"><div class="stat-label">选择题</div><div class="stat-value" id="stats-choice-acc">0%</div></div>
+                        <div class="stat-item"><div class="stat-label">判断题</div><div class="stat-value" id="stats-judge-acc">0%</div></div>
+                        <div class="stat-item"><div class="stat-label">计算题</div><div class="stat-value" id="stats-calc-acc">0%</div></div>
+                        <div class="stat-item"><div class="stat-label">简答题</div><div class="stat-value" id="stats-short-acc">0%</div></div>
+                    </div>
+                </div>
+                <div class="action-buttons" style="margin-top:20px;"><button class="btn btn-secondary" onclick="clearAllProgress()">🗑️ 清空所有数据</button></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="footer">
+        <div class="footer-btn active" data-tab="practice"><span>📝</span><span>练习</span></div>
+        <div class="footer-btn" data-tab="review"><span>📖</span><span>错题</span></div>
+        <div class="footer-btn" data-tab="random"><span>🎲</span><span>随机</span></div>
+        <div class="footer-btn" data-tab="stats"><span>📊</span><span>统计</span></div>
+    </div>
+
+    <div class="result-modal" id="result-modal">
+        <div class="result-content">
+            <div class="result-icon" id="result-icon">✓</div>
+            <div class="result-title" id="result-title">回答正确！</div>
+            <div class="result-text" id="result-text">太棒了，继续加油！</div>
+            <button class="btn btn-primary" onclick="closeModal()">确定</button>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            { id: 1, type: 'explain', category: '名词解释', content: 'VPN', answer: '虚拟专用网，是穿越专用网络和公共网络的安全的、点对点连接网络。', explanation: 'VPN（Virtual Private Network）通过公共网络建立安全的专用连接。' },
+            { id: 2, type: 'explain', category: '名词解释', content: '子网掩码', answer: '子网掩码是一个32位的IP地址，用于屏蔽IP地址的一部分以区别网络标识和主机标识。子网掩码的算法是，把对应主机IP地址的网络部分全部用1来标识，把其对应的主机部分全部用0标识。', explanation: '子网掩码中网络部分为1，主机部分为0，通过与IP地址按位与运算得到网络地址。' },
+            { id: 3, type: 'explain', category: '名词解释', content: 'WLAN', answer: '无线局域网，是利用无线网络技术实现局域网应用的产物，它具备局域网和无线局域网络两方面的特征。', explanation: 'WLAN（Wireless Local Area Network）使用无线信道作为传输媒体。' },
+            { id: 4, type: 'explain', category: '名词解释', content: '无类别域间路由（CIDR）', answer: '取消地址的分类结构，允许以可变长分界的方式分配网络数。无类别的意思是现在的选路决策是基于整个32位IP地址的掩码操作。', explanation: 'CIDR允许将网络前缀相同的连续IP地址组成地址块，提高地址利用率。' },
+            { id: 5, type: 'explain', category: '名词解释', content: '防火墙', answer: '由软件和硬件设备组合而成、在内部网和外部网之间、专用网与公共网之间的界面上构成的保护屏障。', explanation: '防火墙通过控制进出网络的流量来保护网络安全。' },
+            { id: 6, type: 'explain', category: '名词解释', content: '网络管理', answer: '结合计算机管理技术、网络技术，综合利用网络的资源，进行资源的调配，确保网络健康、高效、正常可持续运行。', explanation: '网络管理包括性能管理、配置管理、安全管理等功能。' },
+            { id: 7, type: 'explain', category: '名词解释', content: '吞吐量', answer: '吞吐量指的是各站点间传送的全部数据量。', explanation: '吞吐量是衡量网络性能的重要指标，受本地系统、网络和远程系统影响。' },
+            { id: 8, type: 'explain', category: '名词解释', content: 'ISDN', answer: '综合业务数字网，是基于公共电话网的数字化网络，利用普通的电话线实现双向高速数字信号的传输。', explanation: 'ISDN可开展语音、数据、视频、图像等各项业务，被称为"一线通"。' },
+            { id: 9, type: 'explain', category: '名词解释', content: '计算机病毒', answer: '编制或者在计算机程序中插入的破坏计算机功能或者破坏数据，影响计算机使用并且能够自我复制的一组计算机指令或者程序代码。', explanation: '计算机病毒具有破坏性、传染性和隐蔽性。' },
+            { id: 10, type: 'explain', category: '名词解释', content: 'VLAN', answer: '虚拟局域网，在交换局域网的基础上，通过配置交换机创建的可跨越不同网段、不同网络的逻辑网络。', explanation: 'VLAN将物理网络划分为多个逻辑网络，提高网络安全性和管理效率。' },
+            { id: 11, type: 'explain', category: '名词解释', content: 'DDN', answer: '数字数据网，利用数字信道来传输数据信号的数据传输网。', explanation: 'DDN可用于计算机之间的通信，也可用于传送数字化传真、语音和图像等信号。' },
+            { id: 12, type: 'explain', category: '名词解释', content: '网络操作系统', answer: '为网络提供通信和资源共享的操作平台，负责管理整个网络资源和方便网络用户的软件集合。', explanation: '网络操作系统是网络用户与计算机网络之间的接口。' },
+            { id: 13, type: 'explain', category: '名词解释', content: '局域网（LAN）', answer: '一般用微型计算机或工作站通过高速通信线路相连，但地理上则局限在较小范围。', explanation: '局域网覆盖范围较小，通常在一个建筑物或校园内。' },
+            { id: 14, type: 'explain', category: '名词解释', content: '速率', answer: '连接在计算机网络上的主机在数字信道上传送数据的速率，也称为比特率。', explanation: '速率的单位通常是bps（比特/秒）。' },
+            { id: 15, type: 'explain', category: '名词解释', content: '带宽', answer: '指某个信号具有的频带宽度。', explanation: '带宽是衡量信道传输能力的指标，单位是Hz。' },
+            { id: 16, type: 'explain', category: '名词解释', content: '往返时间RTT', answer: '从发送方发送数据开始到发送方收到来自接收方的确认，总共经历的时间。', explanation: 'RTT包括发送时延、传播时延和处理时延。' },
+            { id: 17, type: 'explain', category: '名词解释', content: '信号', answer: '数据的电器的或电磁的表现。', explanation: '信号分为模拟信号和数字信号。' },
+            { id: 18, type: 'explain', category: '名词解释', content: '全双工通信', answer: '通信的双方可以同时发送和接收信息。', explanation: '全双工通信需要两条独立的信道。' },
+            { id: 19, type: 'explain', category: '名词解释', content: '奈氏准则', answer: '在任何信道中，码元传输的速率是有上限的，传输速率超过此上限，就会出现严重的码间串扰的问题。', explanation: '奈氏准则给出了码元传输速率的极限值。' },
+            { id: 20, type: 'explain', category: '名词解释', content: '信噪比', answer: '信号的平均功率和噪声的平均功率之比。', explanation: '信噪比越高，信道的传输质量越好。' },
+            { id: 21, type: 'explain', category: '名词解释', content: '频分复用技术', answer: '所有用户在同一时间占用不同的带宽资源。', explanation: '频分复用将信道带宽划分为多个子信道。' },
+            { id: 22, type: 'explain', category: '名词解释', content: '停止等待协议（ARQ）', answer: '每发送完一个分组就停止发送，等待对方的确认，在收到确认后再发送下一个分组。', explanation: '停止等待协议是一种简单的可靠传输协议。' },
+            { id: 23, type: 'explain', category: '名词解释', content: '传播时延', answer: '电磁波在信道中传播一定的距离需要花费的时间。', explanation: '传播时延 = 距离 / 电磁波传播速度。' },
+            { id: 24, type: 'explain', category: '名词解释', content: '源点', answer: '源点设备产生要传输的数据，又称为源站或信源。', explanation: '源点是数据通信的起点。' },
+            { id: 25, type: 'explain', category: '名词解释', content: '半双工通信', answer: '通信的双方都可以发送信息，但是不能同时发送或接收信息。', explanation: '半双工通信使用一条信道，双方交替发送和接收。' },
+            { id: 26, type: 'explain', category: '名词解释', content: 'CSMA/CD', answer: '载波监听多点接入碰撞检测。', explanation: 'CSMA/CD是以太网使用的介质访问控制方法。' },
+            { id: 27, type: 'explain', category: '名词解释', content: '拥塞', answer: '在某段时间，若网络中某一资源的需求超过了该资源所能提供的可用部分，网络的性能就要变坏。', explanation: '拥塞会导致网络吞吐量下降和延迟增加。' },
+            { id: 28, type: 'explain', category: '名词解释', content: '拥塞控制', answer: '防止过多的数据注入到网络中，使网络中的路由器或链路不致过载。', explanation: 'TCP使用滑动窗口等机制进行拥塞控制。' },
+            { id: 29, type: 'explain', category: '名词解释', content: '随机接入', answer: '所有用户可以随机发送信息。', explanation: '随机接入适用于负载较轻的网络。' },
+            { id: 30, type: 'explain', category: '名词解释', content: '受控接入', answer: '用户不能随机地发送信息，必须服从一定的控制。', explanation: '受控接入适用于负载较重的网络。' },
+            { id: 31, type: 'explain', category: '名词解释', content: '专用网', answer: '某个部门为本单位的特殊业务工作的需要而建造的网络，不向本单位以外的人提供服务。', explanation: '专用网通常用于企业内部通信。' },
+            { id: 32, type: 'explain', category: '名词解释', content: '时分复用技术', answer: '所有用户是在不同的时间占用同样的频带宽度。', explanation: '时分复用将时间划分为多个时隙。' },
+            { id: 33, type: 'explain', category: '名词解释', content: '数据', answer: '运送消息的实体。', explanation: '数据是信息的载体。' },
+            { id: 34, type: 'explain', category: '名词解释', content: '广域网（WAN）', answer: '作用范围通常为几十到几千公里，是因特网的核心部分。', explanation: '广域网连接多个局域网，覆盖范围广。' },
+            { id: 35, type: 'explain', category: '名词解释', content: '公用网', answer: '电信公司出资建造的大型网络，所有愿意按规定缴纳费用的人都可以使用。', explanation: '公用网也称为公众网。' },
+            { id: 36, type: 'explain', category: '名词解释', content: '发送时延', answer: '主机或路由器发送数据帧所需要的时间。', explanation: '发送时延 = 数据帧长度 / 发送速率。' },
+            { id: 37, type: 'explain', category: '名词解释', content: '单工通信', answer: '只能有一个方向的通信而没有反方向的交互。', explanation: '无线电广播是单工通信的典型例子。' },
+            { id: 38, type: 'explain', category: '名词解释', content: '计算机网络', answer: '凡将地理位置不同且具有独立功能的每个计算机系统通过通信设备和线路连接在一起，并由功能完善的网络软件控制，从而实现网络资源共享和远程通信的系统。', explanation: '计算机网络的核心是资源共享和信息传递。' },
+            { id: 39, type: 'explain', category: '名词解释', content: '数字信号', answer: '时间上离散，仅包含有限数目的信号值，最常见的是二值信号。', explanation: '数字信号只有0和1两种取值。' },
+            { id: 40, type: 'explain', category: '名词解释', content: '基带传输', answer: '不需调制，编码后的数字脉冲信号直接在信道上传送。', explanation: '基带传输适用于短距离通信。' },
+            { id: 41, type: 'explain', category: '名词解释', content: '第三层交换机', answer: '工作在网络层，通过硬件实现IP分组高速交换的设备。', explanation: '第三层交换机兼具路由和交换功能。' },
+            { id: 42, type: 'explain', category: '名词解释', content: '网络协议', answer: '为进行网络中的数据交换而建立的规则、标准或约定。', explanation: '协议的三要素是语法、语义和同步。' },
+            { id: 43, type: 'explain', category: '名词解释', content: '协议栈', answer: '指计算机网络体系结构采用分层模型后，每层的主要功能由对等层协议的运行来实现，几个层次画在一起很像一个栈的结构。', explanation: '协议栈描述了网络各层协议的层次关系。' },
+            { id: 44, type: 'explain', category: '名词解释', content: '服务访问点（SAP）', answer: '在同一系统中相邻两层的实体进行交互的地方。', explanation: 'SAP是一个抽象的逻辑接口。' },
+            { id: 45, type: 'explain', category: '名词解释', content: '非对称数字用户线（ADSL）', answer: '用数字技术对现有模拟电话的用户线进行改造，使它能够承载宽带数字业务。', explanation: 'ADSL利用现有电话线提供高速互联网接入。' },
+            { id: 46, type: 'explain', category: '名词解释', content: '客户-服务器方式', answer: '进程之间服务和被服务的关系，客户是服务请求方，服务器是服务提供方。', explanation: '客户主动发起请求，服务器被动等待请求。' },
+            { id: 47, type: 'explain', category: '名词解释', content: '通信子网', answer: '由负责数据通信处理的通信控制处理机与通信线路组成，功能是实现数据通信任务。', explanation: '通信子网是网络的核心部分。' },
+            { id: 48, type: 'explain', category: '名词解释', content: '差错检测', answer: '为保证传输数据的可靠性，在计算机网络数据传输时采用的检测措施。', explanation: '常用的差错检测方法是CRC循环冗余校验。' },
+            { id: 49, type: 'explain', category: '名词解释', content: '三网', answer: '电信网络、有线电视网络、计算机网络。', explanation: '三网融合是网络发展的趋势。' },
+            { id: 50, type: 'explain', category: '名词解释', content: '链路', answer: '从一个结点到相邻结点的一段物理链路。', explanation: '链路不包括中间的结点。' },
+            { id: 51, type: 'explain', category: '名词解释', content: '频分复用', answer: '将用于传输信道的总带宽划分成若干个子频带，每一个子信道传输1路信号。', explanation: '频分复用是一种信道复用技术。' },
+            { id: 52, type: 'explain', category: '名词解释', content: '无线局域网', answer: '应用无线通信技术将计算机设备互联起来，构成可以互相通信和实现资源共享的网络体系。', explanation: '无线局域网使用无线信道传输数据。' },
+            { id: 53, type: 'explain', category: '名词解释', content: '对称加密', answer: '对信息的加密与解密都使用相同的密钥的加密技术。', explanation: '对称加密速度快，但密钥分发困难。' },
+            { id: 54, type: 'explain', category: '名词解释', content: '非对称加密', answer: '加密的密钥可以公开，解密的密钥需要保密的加密技术。', explanation: '非对称加密解决了密钥分发问题。' },
+            { id: 55, type: 'explain', category: '名词解释', content: 'RTP', answer: '实时传输协议，用于实时传输数据。', explanation: 'RTP常用于互联网上的音频/视频服务。' },
+            { id: 56, type: 'explain', category: '名词解释', content: 'RTCP', answer: '实时传输控制协议，采用与数据包相同的分发机制，将控制包周期性传输到所有会话参与者中。', explanation: 'RTCP用于监控QoS和传递会话控制信息。' },
+            { id: 57, type: 'explain', category: '名词解释', content: '访问控制', answer: '必须对接入网络的权限加以控制，并规定每个用户的接入权限。', explanation: '访问控制是网络安全的重要措施。' },
+            { id: 58, type: 'explain', category: '名词解释', content: '恶意程序', answer: '带有攻击意图所编写的一段程序。', explanation: '恶意程序包括病毒、蠕虫、木马等。' },
+            { id: 59, type: 'explain', category: '名词解释', content: 'BSS', answer: 'Basic Service Set，基本服务集。一个热点的覆盖范围被称为一个BSS。', explanation: 'BSS是无线局域网的基本组成单元。' },
+            { id: 60, type: 'explain', category: '名词解释', content: '流量填充', answer: '在数据流间隙中插入比特，以挫败流量分析的企图。', explanation: '流量填充是一种对抗流量分析攻击的方法。' },
+            { id: 61, type: 'explain', category: '名词解释', content: '流量分析', answer: '通过观察PDU的协议控制信息部分，了解正在通信的协议实体的地址和身份，研究PDU的长度和传输的频度。', explanation: '流量分析是一种被动攻击方式。' },
+            { id: 62, type: 'explain', category: '名词解释', content: '对称密钥密码体制', answer: '加密密钥与解密密钥都使用相同密钥的密码体制。', explanation: '对称密钥密码体制也称为私钥密码体制。' },
+            { id: 63, type: 'explain', category: '名词解释', content: '套接字（Socket）', answer: '对网络中不同主机上的应用进程之间进行双向通信的端点的抽象。', explanation: '套接字是网络编程的基础。' },
+            { id: 64, type: 'explain', category: '名词解释', content: '最大传送单元MTU', answer: 'IP层下面数据链路层所限定的帧格式中数据字段的最大长度。', explanation: 'MTU限制了IP数据报的最大长度。' },
+            { id: 65, type: 'explain', category: '名词解释', content: '域名系统（DNS）', answer: '互联网使用的命名系统，用来把便于人们使用的机器名字转换为IP地址。', explanation: 'DNS提供域名到IP地址的解析服务。' },
+            { id: 66, type: 'explain', category: '名词解释', content: '双协议栈', answer: '在完全过渡到IPv6之前，使一部分主机或路由器同时装有IPv4和IPv6这两种协议栈。', explanation: '双协议栈是IPv6过渡的一种策略。' },
+            { id: 67, type: 'explain', category: '名词解释', content: '多播', answer: '一点对多点的通信，数据报发送到一组计算机中的每一个。', explanation: '多播可以节省网络带宽。' },
+            { id: 68, type: 'explain', category: '名词解释', content: '动态路由', answer: '路由器能够自动地建立自己的路由表，并且能够根据实际情况的变化适时地进行调整。', explanation: '动态路由协议包括RIP、OSPF等。' },
+            { id: 69, type: 'explain', category: '名词解释', content: '运输层协议', answer: '为运行在不同主机上的应用进程之间提供了逻辑通信功能。', explanation: '运输层主要有TCP和UDP两种协议。' },
+            { id: 70, type: 'explain', category: '名词解释', content: '地址块', answer: 'CIDR把网络前缀都相同的所有连续的IP地址组成一个"CIDR地址块"。', explanation: '地址块的大小取决于网络前缀的位数。' },
+            { id: 71, type: 'explain', category: '名词解释', content: '流量控制', answer: '让对方的发送速率不要太快，要让接收方来得及接受。', explanation: '流量控制防止接收方缓冲区溢出。' },
+            { id: 72, type: 'explain', category: '名词解释', content: '动态文档', answer: '文档的内容是在浏览器访问万维网服务器时才由应用程序动态创建的。', explanation: '动态文档根据用户请求生成。' },
+            { id: 73, type: 'explain', category: '名词解释', content: '运输层', answer: '在网络层及其下层共同解决了将主机通过异构网络互连起来所面临的问题，实现主机到主机的通信。', explanation: '运输层提供端到端的逻辑通信。' },
+            { id: 74, type: 'explain', category: '名词解释', content: 'TCP', answer: 'Transmission Control Protocol，传输控制协议。TCP服务模型包括面向连接服务和可靠数据传输服务。', explanation: 'TCP是一种可靠的面向连接的传输协议。' },
+            { id: 75, type: 'explain', category: '名词解释', content: '浏览器', answer: '一个浏览器包括一组客户程序、一组解释程序，以及一个控制程序。', explanation: '浏览器用于访问万维网资源。' },
+            { id: 76, type: 'explain', category: '名词解释', content: '超媒体', answer: '超级媒体的简称，是超文本和多媒体在信息浏览环境下的结合。', explanation: '超媒体是万维网的基础技术之一。' },
+            { id: 77, type: 'explain', category: '名词解释', content: 'P2P', answer: '一种在对等者之间分配任务和工作负载的分布式应用架构。', explanation: 'P2P不需要中心服务器。' },
+            { id: 78, type: 'explain', category: '名词解释', content: '路由聚合', answer: '把多个前缀相同的地址用一个来代替，有利于减少路由表中的项目。', explanation: '路由聚合可以减小路由表规模。' },
+            { id: 79, type: 'explain', category: '名词解释', content: '转发表', answer: '交换设备内，从入端口到出端口建立起来的对应表，主要用来转发数据帧或IP分组。', explanation: '转发表用于快速转发数据。' },
+            { id: 80, type: 'explain', category: '名词解释', content: '路由表', answer: '路由设备内，从源地址到目的地址建立起来的最佳路径表，主要用来转发IP分组。', explanation: '路由表存储到达各目的网络的最佳路径。' },
+            { id: 81, type: 'explain', category: '名词解释', content: 'ARP（地址解析协议）', answer: '把IP地址解析为硬件地址，解决同一个局域网上的主机或路由器的IP地址和硬件地址的映射问题。', explanation: 'ARP用于IP地址到MAC地址的转换。' },
+            { id: 82, type: 'explain', category: '名词解释', content: '复用', answer: '应用层所有的应用进程都可以通过运输层再传送到IP层。', explanation: '复用允许多个应用进程共享网络资源。' },
+            { id: 83, type: 'explain', category: '名词解释', content: '分用', answer: '运输层从IP层收到发送给各应用进程的数据后，必须分别交付指明的各应用进程。', explanation: '分用是复用的逆过程。' },
+            { id: 84, type: 'fill', category: '填空', content: '一个数据通信系统可以划分为三大部分，即源系统、（____）和目的系统。', answer: '传输系统', explanation: '数据通信系统包括源系统、传输系统和目的系统。' },
+            { id: 85, type: 'fill', category: '填空', content: '网络协议的三个要素是语法、（____）、同步。', answer: '语义', explanation: '协议三要素：语法规定数据格式，语义规定控制信息含义，同步规定时序关系。' },
+            { id: 86, type: 'fill', category: '填空', content: '数据链路层协议解决的三个基本问题有封装成帧、透明传输、（____）。', answer: '差错检测', explanation: '数据链路层的三个基本问题。' },
+            { id: 87, type: 'fill', category: '填空', content: '局域网数据链路层分为（____）、（____）。', answer: '逻辑链路控制子层;媒体接入控制MAC子层', explanation: '局域网数据链路层分为LLC子层和MAC子层。' },
+            { id: 88, type: 'fill', category: '填空', content: '通信包括单工通信、（____）、（____）三种通信方式。', answer: '半双工通信;全双工通信', explanation: '三种基本通信方式。' },
+            { id: 89, type: 'fill', category: '填空', content: '物理层考虑的是怎样才能在连接各种计算机的传输媒体上传输（____）。', answer: '数据比特流', explanation: '物理层负责比特流的传输。' },
+            { id: 90, type: 'fill', category: '填空', content: '物理层的接口有（____）、（____）、（____）、（____）四个特性。', answer: '机械特性;电气特性;功能特性;规程特性', explanation: '物理层接口的四个特性。' },
+            { id: 91, type: 'fill', category: '填空', content: 'TCP/IP模型分为四层，它们是（____）、（____）、（____）、（____）。', answer: '网络访问层;国际互联层;传输层;应用层', explanation: 'TCP/IP四层模型。' },
+            { id: 92, type: 'fill', category: '填空', content: '衡量网络性能的两个主要指标为（____）、（____）。', answer: '带宽;时延', explanation: '带宽和时延是衡量网络性能的主要指标。' },
+            { id: 93, type: 'fill', category: '填空', content: 'MAC地址长（____）位。', answer: '48', explanation: 'MAC地址是48位的物理地址。' },
+            { id: 94, type: 'fill', category: '填空', content: '计算机的硬件地址在适配器的（____）中。', answer: 'ROM', explanation: 'MAC地址固化在网卡的ROM中。' },
+            { id: 95, type: 'fill', category: '填空', content: '邮件系统都采用____协议发邮件，采用____和____协议接收邮件。', answer: 'SMTP;POP;IMAP', explanation: 'SMTP发送邮件，POP和IMAP接收邮件。' },
+            { id: 96, type: 'fill', category: '填空', content: '按服务器用途划分，服务器可分为____和____。', answer: '通用型服务器;专用型服务器', explanation: '服务器按用途分类。' },
+            { id: 97, type: 'fill', category: '填空', content: '将32位IP地址和子网掩码的对应位做____运算，得到该主机的网络号。', answer: '逻辑与', explanation: 'IP地址与子网掩码按位与得到网络地址。' },
+            { id: 98, type: 'fill', category: '填空', content: '根据信号中代表消息的参数取值不同，信号可分为（____）和（____）。', answer: '模拟信号;数字信号', explanation: '信号分为模拟信号和数字信号。' },
+            { id: 99, type: 'fill', category: '填空', content: '以太网的适配器有过滤功能，它只接收（____）、（____）或（____）。', answer: '单播帧;广播帧;多播帧', explanation: '网卡只接收特定类型的帧。' },
+            { id: 100, type: 'fill', category: '填空', content: '数据链路层中的链路控制功能有：（1）（____）。（2）帧定界。（3）流量控制。（4）（____）。（5）将数据和控制信息区分开。（6）透明传输。（7）（____）。', answer: '链路管理;差错控制;寻址', explanation: '数据链路层的七个链路控制功能。' },
+            { id: 101, type: 'fill', category: '填空', content: '一个数据通信系统可划分为三大部分：（____）、（____）和（____）。', answer: '源系统;传输系统;目的系统', explanation: '数据通信系统的三个组成部分。' },
+            { id: 102, type: 'fill', category: '填空', content: '在TCP/IP网络中，TCP协议工作在（____），FTP协议工作在（____）。', answer: '传输层;应用层', explanation: 'TCP在传输层，FTP在应用层。' },
+            { id: 103, type: 'fill', category: '填空', content: '数据通信可分为（____）和（____）两大类。', answer: '同步通信;异步通信', explanation: '数据通信的两种方式。' },
+            { id: 104, type: 'fill', category: '填空', content: '导引型传输媒体有双绞线，（____），光纤。', answer: '同轴电缆', explanation: '三种导引型传输媒体。' },
+            { id: 105, type: 'fill', category: '填空', content: '网络边缘的通信方式通常分为（____）和（____）两大类。', answer: '客户/服务器方式;对等方式', explanation: '网络边缘的两种通信方式。' },
+            { id: 106, type: 'fill', category: '填空', content: '因特网的拓扑结构从工作方式看可以划分为（____）和（____）两大类。', answer: '边缘部分;核心部分', explanation: '因特网的两大部分。' },
+            { id: 107, type: 'fill', category: '填空', content: '传输差错可分为两大类：（____）和（____）。', answer: '比特差错;传输差错', explanation: '传输差错的分类。' },
+            { id: 108, type: 'fill', category: '填空', content: '路由器的路由可分为（____）和（____）两类。', answer: '静态;动态', explanation: '路由分为静态路由和动态路由。' },
+            { id: 109, type: 'fill', category: '填空', content: '从目前发展情况来看，局域网可分为（____）和（____）两类。', answer: '共享介质局域网;交换式局域网', explanation: '局域网的两种类型。' },
+            { id: 110, type: 'fill', category: '填空', content: '数据链路层使用的信道主要有两种类型，分别是：（____）和（____）。', answer: '点对点信道;广播信道', explanation: '数据链路层的两种信道类型。' },
+            { id: 111, type: 'fill', category: '填空', content: '数据在网络中传输经历的总时延就是发送时延、传播时延、处理时延和（____）之和。', answer: '排队时延', explanation: '总时延包括四种时延。' },
+            { id: 112, type: 'fill', category: '填空', content: '数据交换有（____）、报文交换、分组交换三种主要交换技术。', answer: '电路交换', explanation: '三种数据交换技术。' },
+            { id: 113, type: 'fill', category: '填空', content: '为进行网络中的数据交换而建立的规则、标准或约定称为（____）。', answer: '协议', explanation: '协议的定义。' },
+            { id: 114, type: 'fill', category: '填空', content: '计算机网络的通信面对两大类威胁，即____和____。', answer: '被动攻击;主动攻击', explanation: '网络威胁分为被动攻击和主动攻击。' },
+            { id: 115, type: 'fill', category: '填空', content: '网络按覆盖的范围可分为广域网，（____），（____）。', answer: '局域网;城域网', explanation: '网络按覆盖范围分类。' },
+            { id: 116, type: 'fill', category: '填空', content: 'VLAN是一种将局域网从（____）上划分网段，而不是从（____）上划分网段。', answer: '逻辑;物理', explanation: 'VLAN是逻辑划分。' },
+            { id: 117, type: 'fill', category: '填空', content: '二进制码元在传输系统中被传错的概率称为（____）。', answer: '误码率', explanation: '误码率的定义。' },
+            { id: 118, type: 'fill', category: '填空', content: '密码学包括（____）和（____）。', answer: '密码编码学;密码分析学', explanation: '密码学的两个分支。' },
+            { id: 119, type: 'fill', category: '填空', content: '计算机网络都面临（____）、（____）、（____）、（____）四种威胁。', answer: '截获;中断;篡改;伪造', explanation: '网络面临的四种基本威胁。' },
+            { id: 120, type: 'fill', category: '填空', content: '计算机的IP地址由____和____两部分组成。', answer: '网络地址;主机地址', explanation: 'IP地址的组成。' },
+            { id: 121, type: 'fill', category: '填空', content: '帧中继运行在OSI参考模型的____和____。', answer: '物理层;数据链路层', explanation: '帧中继的工作层次。' },
+            { id: 122, type: 'fill', category: '填空', content: 'IPv4地址由____位二进制数组成，为便于识别，通常采用____的方法进行表示。', answer: '32;点分十进制', explanation: 'IPv4地址的表示方法。' },
+            { id: 123, type: 'fill', category: '填空', content: 'VPN连接方式为点到点的VPN连接和____VPN连接。', answer: '远程访问', explanation: 'VPN的两种连接方式。' },
+            { id: 124, type: 'fill', category: '填空', content: '实现数字签名的主要方法有()，()和报文摘要。', answer: '秘密密钥算法;公开密钥算法', explanation: '数字签名的方法。' },
+            { id: 125, type: 'fill', category: '填空', content: '黑客对信息流的干预方式可分为中断，（____），（____）和（____）。', answer: '截获;篡改;伪造', explanation: '黑客攻击的四种方式。' },
+            { id: 126, type: 'fill', category: '填空', content: '（____）通过对进入网络的分组进行深度分析与检测。', answer: '入侵检测系统', explanation: '入侵检测系统的功能。' },
+            { id: 127, type: 'fill', category: '填空', content: '（____）是一种特殊编程的路由器，安装在一个网点和网络的其余部分之间。', answer: '防火墙', explanation: '防火墙的定义。' },
+            { id: 128, type: 'fill', category: '填空', content: '工作在应用层的协议有DNS协议，FTP协议，SNMP协议、telent协议，____协议等。', answer: 'HTTP', explanation: '应用层协议。' },
+            { id: 129, type: 'fill', category: '填空', content: 'TCP协议经过____次握手建立链接，经过____次挥手释放链接。', answer: '3;4', explanation: 'TCP连接建立和释放的过程。' },
+            { id: 130, type: 'fill', category: '填空', content: '网络层的功能是____和____。', answer: '分组转发;路由选择', explanation: '网络层的功能。' },
+            { id: 131, type: 'fill', category: '填空', content: '动态主机配置协议DHCP，它工作在OSI的____。', answer: '应用层', explanation: 'DHCP工作在应用层。' },
+            { id: 132, type: 'fill', category: '填空', content: 'UDP提供____的传输服务。', answer: '面向无连接', explanation: 'UDP的特点。' },
+            { id: 133, type: 'fill', category: '填空', content: 'IPv6中，IP地址长度为（____）位。', answer: '128', explanation: 'IPv6地址长度。' },
+            { id: 134, type: 'fill', category: '填空', content: 'HTTP默认的端口号是（____）。', answer: '80', explanation: 'HTTP默认端口。' },
+            { id: 135, type: 'fill', category: '填空', content: '运输连接三个阶段（____）（____）（____）。', answer: '连接建立;数据传送;连接释放', explanation: '运输连接的三个阶段。' },
+            { id: 136, type: 'fill', category: '填空', content: 'TCP/IP运输层有两个不同的协议，即____和____。', answer: 'UDP;TCP', explanation: '运输层的两个协议。' },
+            { id: 137, type: 'fill', category: '填空', content: '多播地址只能用于（____），而不能用于（____）。', answer: '目的地址;源地址', explanation: '多播地址的用途。' },
+            { id: 138, type: 'fill', category: '填空', content: '端口用一个____位端口号进行标志。', answer: '16', explanation: '端口号是16位的。' },
+            { id: 139, type: 'fill', category: '填空', content: '在同一个局域网上的主机或路由器的IP地址中的（____）必须是同样的。', answer: '网络前缀', explanation: '同一局域网的网络前缀相同。' },
+            { id: 140, type: 'fill', category: '填空', content: '路由器总是具有两个或两个以上的IP地址。即路由器每个接口的IP地址的（____）都不同。', answer: '网络前缀', explanation: '路由器各接口的网络前缀不同。' },
+            { id: 141, type: 'fill', category: '填空', content: 'A类IP地址的网络号为（____）。', answer: '8bit', explanation: 'A类地址的网络号占8位。' },
+            { id: 142, type: 'fill', category: '填空', content: 'ISP是指____。', answer: 'Internet服务提供商', explanation: 'ISP的定义。' },
+            { id: 143, type: 'fill', category: '填空', content: '路由器是____的中间设备，作用是在互连网中完成路由选择的功能。', answer: '网络层', explanation: '路由器工作在网络层。' },
+            { id: 144, type: 'fill', category: '填空', content: '在TCP/IPRM中，用于互联层的协议主要有：ARP、IP、RARP、ICMP和____协议。', answer: 'IGMP', explanation: '互联层的协议。' },
+            { id: 145, type: 'fill', category: '填空', content: '计算机网络系统由负责____的通信子网和负责信息处理的____子网组成。', answer: '信息传递;资源', explanation: '计算机网络的组成。' },
+            { id: 146, type: 'choice', category: '选择', content: '在OSI七层结构模型中，处于数据链路层与运输层之间的是（）', options: ['A、物理层', 'B、网络层', 'C、会话层', 'D、表示层'], answer: 'B', explanation: 'OSI七层模型从下到上依次是：物理层、数据链路层、网络层、运输层、会话层、表示层、应用层。' },
+            { id: 147, type: 'choice', category: '选择', content: '服务与协议是完全不同的两个概念，下列关于它们的说法错误的是（）', options: ['A、协议是水平的，服务是垂直的', 'B、在协议的控制下，两个对等实体间的通信使得本层能够向上一层提供服务', 'C、协议的实现保证了能够向上一层提供服务', 'D、OSI将层与层之间交换的数据单位称为协议数据单元PDU'], answer: 'D', explanation: 'OSI将层与层之间交换的数据单位称为服务数据单元SDU，PDU是对等层之间传送的数据单位。' },
+            { id: 148, type: 'choice', category: '选择', content: '在给主机配置IP地址时，可以使用的有（）', options: ['A、129.12.1.112', 'B、127.0.1.1', 'C、192.168.1.255', 'D、220.1.25.0'], answer: 'A', explanation: '127.x.x.x是回环地址，192.168.1.255是广播地址，220.1.25.0是网络地址。' },
+            { id: 149, type: 'choice', category: '选择', content: '在我国Internet又被称为（）', options: ['A、邮电通信网', 'B、数据通信网', 'C、企业网', 'D、因特网'], answer: 'D', explanation: 'Internet在我国又称为因特网。' },
+            { id: 150, type: 'choice', category: '选择', content: 'Internet最早起源于（）', options: ['A、ARPAnet', 'B、MILnet', 'C、NSFnet', 'D、ANSnet'], answer: 'A', explanation: 'Internet的前身是ARPAnet。' },
+            { id: 151, type: 'choice', category: '选择', content: '物理层协议定义的一系列标准有四个方面的特性，不属于这些特性的是（）', options: ['A、接口特性', 'B、电气特性', 'C、功能特性', 'D、机械特性'], answer: 'A', explanation: '物理层接口的四个特性：机械特性、电气特性、功能特性、规程特性。' },
+            { id: 152, type: 'choice', category: '选择', content: '局部地区通信网络简称局域网，英文缩写为（）', options: ['A、WAN', 'B、LAN', 'C、SAN', 'D、MAN'], answer: 'B', explanation: 'LAN是Local Area Network的缩写。' },
+            { id: 153, type: 'choice', category: '选择', content: 'Internet的前身是（）', options: ['A、Intranet', 'B、Ethernet', 'C、ARPAnet', 'D、Cernet'], answer: 'C', explanation: 'ARPAnet是Internet的前身。' },
+            { id: 154, type: 'choice', category: '选择', content: '下列哪个不是一个网络协议的组成要素之一（）', options: ['A、语法', 'B、语义', 'C、同步', 'D、体系结构'], answer: 'D', explanation: '协议的三要素：语法、语义、同步。' },
+            { id: 155, type: 'choice', category: '选择', content: '（）被用于计算机内部的数据传输', options: ['A、串行传输', 'B、并行传输', 'C、同步传输', 'D、异步传输'], answer: 'B', explanation: '并行传输在计算机内部广泛使用。' },
+            { id: 156, type: 'choice', category: '选择', content: 'DHCP协议的功能是（）', options: ['A、为客户自动进行注册', 'B、为客户机自动配置IP地址', 'C、使DNS名字自动登录', 'D、提供路由功能'], answer: 'B', explanation: 'DHCP用于动态分配IP地址。' },
+            { id: 157, type: 'choice', category: '选择', content: '下面协议中，用于WWW传输控制的是（）', options: ['A、URL', 'B、SMTP', 'C、HTTP', 'D、HTML'], answer: 'C', explanation: 'HTTP是超文本传输协议。' },
+            { id: 158, type: 'choice', category: '选择', content: '局域网中访问冲突的根源是（）', options: ['A、独占介质', 'B、共享介质', 'C、引入MAC子层', 'D、规则的拓扑结构'], answer: 'B', explanation: '共享介质导致多个设备同时发送数据时产生冲突。' },
+            { id: 159, type: 'choice', category: '选择', content: '数据从上到下封装的格式为（）', options: ['A、比特包帧段数据', 'B、数据段包帧比特', 'C、比特帧包段数据', 'D、数据包段帧比特'], answer: 'B', explanation: '数据→段→包→帧→比特。' },
+            { id: 160, type: 'choice', category: '选择', content: '通过电话网实现数据交换，采用的是（）', options: ['A、电路交换', 'B、报文交换', 'C、数据包业务服务', 'D、虚电路业务服务'], answer: 'A', explanation: '电话网使用电路交换。' },
+            { id: 161, type: 'choice', category: '选择', content: '数据链路层传输和处理数据的单位是（）', options: ['A、报文段', 'B、比特流', 'C、数据报', 'D、帧'], answer: 'D', explanation: '数据链路层的传输单位是帧。' },
+            { id: 162, type: 'choice', category: '选择', content: '计算机网络分为广域网、城域网、局域网，其划分的主要依据是网络的（）', options: ['A、拓扑结构', 'B、控制方式', 'C、作用范围', 'D、传输介质'], answer: 'C', explanation: '按覆盖范围分类。' },
+            { id: 163, type: 'choice', category: '选择', content: '局域网中的计算机为了相互通信，必须安装什么设备（）', options: ['A、调制解调器', 'B、网卡', 'C、声卡', 'D、电视卡'], answer: 'B', explanation: '网卡是局域网通信必需的设备。' },
+            { id: 164, type: 'choice', category: '选择', content: '将文字域名转换为IP地址的服务是（）', options: ['A、DNS', 'B、WINS', 'C、DHCP', 'D、IIS'], answer: 'A', explanation: 'DNS负责域名解析。' },
+            { id: 165, type: 'choice', category: '选择', content: '为了防御网络监听，最常用的方法是（）', options: ['A、采用物理传输', 'B、信息加密', 'C、无线网', 'D、使用专线传输'], answer: 'B', explanation: '信息加密是防御网络监听最有效的方法。' },
+            { id: 166, type: 'choice', category: '选择', content: '网络安全是在分布网络环境中对（）提供安全保护', options: ['A、信息载体', 'B、信息的处理、传输', 'C、信息的存储、访问', 'D、上面3项都是'], answer: 'D', explanation: '网络安全需要保护信息的各个方面。' },
+            { id: 167, type: 'choice', category: '选择', content: '在公开密钥体制中，加密密钥即（）', options: ['A、解密密钥', 'B、私密密钥', 'C、私有密钥', 'D、公开密钥'], answer: 'D', explanation: '公开密钥体制中，加密密钥是公开的。' },
+            { id: 168, type: 'choice', category: '选择', content: '篡改的攻击形式是针对信息（）的攻击', options: ['A、保密性', 'B、完整性', 'C、认证性', 'D、不可抵赖性'], answer: 'B', explanation: '篡改破坏信息的完整性。' },
+            { id: 169, type: 'choice', category: '选择', content: '对利用软件缺陷进行的网络攻击，最有效的防范方法是（）', options: ['A、及时更新补丁程序', 'B、安装防病毒软件', 'C、安装防火墙', 'D、安装漏洞扫描软件'], answer: 'A', explanation: '及时更新补丁可以修复已知漏洞。' },
+            { id: 170, type: 'choice', category: '选择', content: '下列设备中，可隔绝广播风暴的是（）', options: ['A、交换器', 'B、网桥', 'C、MODEM', 'D、路由器'], answer: 'D', explanation: '路由器可以隔绝广播域。' },
+            { id: 171, type: 'choice', category: '选择', content: 'Internet中发送邮件协议是（）', options: ['A、FTP', 'B、SMTP', 'C、HTTP', 'D、POP'], answer: 'B', explanation: 'SMTP是邮件发送协议。' },
+            { id: 172, type: 'choice', category: '选择', content: 'Ethernet以太网结点最多可达（）', options: ['A、512', 'B、1024', 'C、2048', 'D、4098'], answer: 'B', explanation: '以太网最多支持1024个结点。' },
+            { id: 173, type: 'choice', category: '选择', content: '下列哪种说法是正确的（）', options: ['A、集线器可以对接收到的信息进行放大', 'B、集线器具有信息过滤功能', 'C、集线器具有路径检测功能', 'D、集线器具有交换功能'], answer: 'A', explanation: '集线器只具有信号放大功能。' },
+            { id: 174, type: 'choice', category: '选择', content: 'HTTP是一种（）', options: ['A、高级程序设计语言', 'B、超文本传输协议', 'C、域名', 'D、文件传输协议'], answer: 'B', explanation: 'HTTP是超文本传输协议。' },
+            { id: 175, type: 'choice', category: '选择', content: '下列IP地址中书写正确的是（）', options: ['A、168.192.0.256', 'B、325.255.231.0', 'C、192.168.1', 'D、202.85.68.98'], answer: 'D', explanation: 'IP地址每个字节范围是0-255。' },
+            { id: 176, type: 'choice', category: '选择', content: 'OSI参考模型中，提供端到端的透明数据传输服务、差错控制和流量控制的层是（）', options: ['A、物理层', 'B、网络层', 'C、传输层', 'D、会话层'], answer: 'C', explanation: '传输层提供端到端的可靠传输。' },
+            { id: 177, type: 'choice', category: '选择', content: '关于传输层的面向连接服务的特性是（）', options: ['A、不保证可靠和顺序的交付', 'B、不保证可靠、但保证顺序的交付', 'C、保证可靠、但不保证顺序的交付', 'D、保证可靠和顺序的交付'], answer: 'D', explanation: '面向连接服务保证可靠和顺序交付。' },
+            { id: 178, type: 'choice', category: '选择', content: 'IPv6地址的位数是（）', options: ['A、32', 'B、128', 'C、64', 'D、256'], answer: 'B', explanation: 'IPv6地址长度为128位。' },
+            { id: 179, type: 'choice', category: '选择', content: '以下哪个是非法的IP地址（）', options: ['A、202.0.0.202', 'B、202.255.255.3', 'C、10.10.10.10', 'D、1.2.3.256'], answer: 'D', explanation: 'IP地址每个字节不能超过255。' },
+            { id: 180, type: 'choice', category: '选择', content: '以下属于物理层的设备是（）', options: ['A、中继器', 'B、以太网交换机', 'C、桥', 'D、网关'], answer: 'A', explanation: '中继器工作在物理层。' },
+            { id: 181, type: 'choice', category: '选择', content: '在以太网中是根据（）地址来区分不同的设备的', options: ['A、LLC地址', 'B、MAC地址', 'C、IP地址', 'D、IPX地址'], answer: 'B', explanation: '以太网使用MAC地址区分设备。' },
+            { id: 182, type: 'choice', category: '选择', content: '路由选择协议位于（）', options: ['A、物理层', 'B、数据链路层', 'C、网络层', 'D、应用层'], answer: 'C', explanation: '路由选择协议工作在网络层。' },
+            { id: 183, type: 'choice', category: '选择', content: '下列关于路由器的说法错误的是（）', options: ['A、路由器工作在网络层', 'B、路由器针对网络层地址协议进行选择与判断', 'C、路由器是一种用来连接两个运行相同/不同协议的通信子网的硬件设备', 'D、路由器能分隔冲突域，但不能分隔广播域'], answer: 'D', explanation: '路由器既能分隔冲突域，也能分隔广播域。' },
+            { id: 184, type: 'choice', category: '选择', content: '下列设备中，能够分隔广播域的是（）', options: ['A、集线器', 'B、交换机', 'C、路由器', 'D、中继器'], answer: 'C', explanation: '路由器可以分隔广播域。' },
+            { id: 185, type: 'choice', category: '选择', content: '在五层计算机网络体系结构中，为应用进程之间提供端到端的逻辑通信的是（）', options: ['A、应用层', 'B、传输层', 'C、网络层', 'D、数据链路层'], answer: 'B', explanation: '传输层提供端到端的逻辑通信。' },
+            { id: 186, type: 'choice', category: '选择', content: '以下全部基于TCP的应用层协议为（）', options: ['A、DHCP和SMTP', 'B、FTP和HTTP', 'C、DNS和FTP', 'D、HTTP和SNMP'], answer: 'B', explanation: 'FTP和HTTP都基于TCP。' },
+            { id: 187, type: 'choice', category: '选择', content: '某台计算机的IP地址为132.121.100.1，那么它属于（）网', options: ['A、A类', 'B、B类', 'C、C类', 'D、D类'], answer: 'B', explanation: '132属于B类地址范围（128-191）。' },
+            { id: 188, type: 'choice', category: '选择', content: 'TCP/IP模型的传输层有两个协议，UDP是（）', options: ['A、一种可靠的面向连接的协议', 'B、一种不可靠的面向连接的协议', 'C、一种可靠的无连接协议', 'D、一种不可靠的无连接协议'], answer: 'D', explanation: 'UDP是不可靠的无连接协议。' },
+            { id: 189, type: 'choice', category: '选择', content: 'OSPF属于下列哪种类型的协议（）', options: ['A、内部路由协议', 'B、外部路由协议', 'C、混合路由协议', 'D、边界路由协议'], answer: 'A', explanation: 'OSPF是内部网关协议。' },
+            { id: 190, type: 'choice', category: '选择', content: '在TCP/IP参考模型中TCP协议工作在（）', options: ['A、应用层', 'B、传输层', 'C、互连层', 'D、主机-网络层'], answer: 'B', explanation: 'TCP工作在传输层。' },
+            { id: 191, type: 'choice', category: '选择', content: 'Internet网采用的通信协议是（）', options: ['A、x.25', 'B、TCP/IP', 'C、SMIP', 'D、IPX/SPX'], answer: 'B', explanation: 'Internet采用TCP/IP协议。' },
+            { id: 192, type: 'choice', category: '选择', content: '在Internet网中，WWW的含义是（）', options: ['A、超媒体', 'B、万维网', 'C、浏览器', 'D、超文本'], answer: 'B', explanation: 'WWW是万维网的缩写。' },
+            { id: 193, type: 'choice', category: '选择', content: '在Internet中，用字符串表示的IP地址为（）', options: ['A、账户', 'B、域名', 'C、主机名', 'D、用户名'], answer: 'B', explanation: '域名是用字符串表示的IP地址。' },
+            { id: 194, type: 'choice', category: '选择', content: 'IP地址190.233.27.13是（）类地址', options: ['A、A', 'B、B', 'C、C', 'D、D'], answer: 'B', explanation: '190属于B类地址范围。' },
+            { id: 195, type: 'choice', category: '选择', content: '在按OSI标准建造的网络中具有路径选择功能的唯一层次是（）', options: ['A、物理层', 'B、数据链路层', 'C、网络层', 'D、传输层'], answer: 'C', explanation: '网络层负责路由选择。' },
+            { id: 196, type: 'choice', category: '选择', content: 'IP地址200.64.32.65的主机号是（）', options: ['A、200.64', 'B、32.65', 'C、200.64.32', 'D、65'], answer: 'D', explanation: '200开头是C类地址，主机号占最后一个字节。' },
+            { id: 197, type: 'choice', category: '选择', content: '1994年9月美国提出建立()的计划', options: ['A、NII', 'B、GII', 'C、NNI', 'D、NUI'], answer: 'A', explanation: 'NII是国家信息基础设施。' },
+            { id: 198, type: 'choice', category: '选择', content: '10Base-T局域网的特征是()', options: ['A、基带粗铜轴电缆，传输速率10Mb/s', 'B、基带细铜轴电缆，传输速率10Mb/s', 'C、基带双绞线，传输速率10Mb/s', 'D、宽带双绞线，传输速率10Mb/s'], answer: 'C', explanation: '10Base-T使用双绞线，传输速率10Mb/s。' },
+            { id: 199, type: 'choice', category: '选择', content: 'PPP协议是()的协议', options: ['A、物理层', 'B、数据链路层', 'C、网络层', 'D、应用层'], answer: 'B', explanation: 'PPP是数据链路层协议。' },
+            { id: 200, type: 'choice', category: '选择', content: '若某台机器的IP地址为131.105.4.1，且它属于B类网，则其主机号为()', options: ['A、4.1', 'B、131.105', 'C、105.4.1', 'D、1'], answer: 'A', explanation: 'B类地址主机号占后两个字节。' },
+            { id: 201, type: 'choice', category: '选择', content: '承载信息的基本信号单位是()', options: ['A、码元', 'B、比特', 'C、数据传输速率', 'D、误码率'], answer: 'A', explanation: '码元是承载信息的基本信号单位。' },
+            { id: 202, type: 'choice', category: '选择', content: 'TELNET为()协议', options: ['A、地址解析', 'B、文件传输', 'C、远程通信', 'D、控制文件'], answer: 'C', explanation: 'TELNET是远程登录协议。' },
+            { id: 203, type: 'choice', category: '选择', content: '物理层的功能是实现实体之间的按()传输', options: ['A、位', 'B、字节', 'C、报文', 'D、帧'], answer: 'A', explanation: '物理层以比特为单位传输。' },
+            { id: 204, type: 'choice', category: '选择', content: '通信子网不包括()', options: ['A、物理层', 'B、数据链路层', 'C、传输层', 'D、网络层'], answer: 'C', explanation: '通信子网包括物理层、数据链路层和网络层。' },
+            { id: 205, type: 'choice', category: '选择', content: 'MAC地址已固化在网卡上的ROM中，因此常常将MAC地址称为（）', options: ['A、硬件地址', 'B、虚拟地址', 'C、家庭地址', 'D、学校地址'], answer: 'A', explanation: 'MAC地址也称为硬件地址或物理地址。' },
+            { id: 206, type: 'choice', category: '选择', content: 'IPV6协议的正式标准是哪一年发布的（）', options: ['A、2017', 'B、1897', 'C、2022', 'D、1949'], answer: 'A', explanation: 'IPv6正式标准于2017年发布。' },
+            { id: 207, type: 'choice', category: '选择', content: 'TCP和UDP协议的相似之处是（）', options: ['A、面向连接的协议', 'B、面向非连接的协议', 'C、传输层协议', 'D、以上均不对'], answer: 'C', explanation: 'TCP和UDP都是传输层协议。' },
+            { id: 208, type: 'choice', category: '选择', content: '主机甲与主机乙之间已建立一个TCP连接，若甲收到1个来自乙的TCP段，该段的序号为2020、确认号为1166、有效载荷为300字节，则甲立即发送给乙的TCP段的序号和确认号分别是()', options: ['A、1166，2319', 'B、1166，2320', 'C、1167，2319', 'D、1167，2320'], answer: 'B', explanation: '序号为确认号1166，确认号为2020+300=2320。' },
+            { id: 209, type: 'choice', category: '选择', content: 'TCP/IP协议族中属于网络层协议的是（）', options: ['A、IP、UDP', 'B、ARP、IP、DNS', 'C、ARP、IP、ICMP', 'D、DNS、SMTP'], answer: 'C', explanation: 'ARP、IP、ICMP都属于网络层协议。' },
+            { id: 210, type: 'choice', category: '选择', content: '相对于ISO/OSI的7层参考模型的低四层，TCP/IP协议集中对应的层次有（）', options: ['A、传输层、互联网层、网络接口层和物理层', 'B、传输层、互联网层、网络接口层', 'C、传输层、互联网层、ATM层和物理层', 'D、传输层、网络层、数据链路层和物理层'], answer: 'B', explanation: 'TCP/IP对应传输层、互联网层和网络接口层。' },
+            { id: 211, type: 'choice', category: '选择', content: '一个IP地址包含网络地址与（）', options: ['A、广播地址', 'B、多址地址', 'C、主机地址', 'D、子网掩码'], answer: 'C', explanation: 'IP地址由网络地址和主机地址组成。' },
+            { id: 212, type: 'choice', category: '选择', content: '在TCP/IP协议簇中，（）协议属于网络层的无连接协议', options: ['A、IP', 'B、SMTP', 'C、UDP', 'D、TCP'], answer: 'A', explanation: 'IP是网络层的无连接协议。' },
+            { id: 213, type: 'choice', category: '选择', content: '通信系统必须具备的三个基本要素是（）', options: ['A、终端、电缆、计算机', 'B、信号发生器、通信线路、信号接收设备', 'C、源系统、传输系统、目的系统', 'D、终端、通信设施、接收设备'], answer: 'C', explanation: '通信系统三要素：源系统、传输系统、目的系统。' },
+            { id: 214, type: 'choice', category: '选择', content: '调制解调器实现的信号转换是（）', options: ['A、模/数和数/模', 'B、调制/解调', 'C、无线有线', 'D、电信号/光信号'], answer: 'A', explanation: '调制解调器实现数模转换。' },
+            { id: 215, type: 'choice', category: '选择', content: '以太网传输协议规定的最小有效数据帧长度为()', options: ['A、16B', 'B、32B', 'C、54B', 'D、64B'], answer: 'D', explanation: '以太网最小帧长为64字节。' },
+            { id: 216, type: 'choice', category: '选择', content: '全"0"的IP地址代表的意思为()', options: ['A、本地广播地址', 'B、直接广播地址', 'C、本网络的本主机', 'D、用作本地软件环回测试'], answer: 'C', explanation: '全0地址表示本网络的本主机。' },
+            { id: 217, type: 'choice', category: '选择', content: '下面哪一项关于虚拟局域网VLAN的描述正确的是()', options: ['A、交换机的一个端口可以同时属于多个不同的VLAN', 'B、一个VLAN属于一个广播域，其内部广播流量不会发送到其它VLAN', 'C、VLAN之间可以借助二层交换机通信', 'D、VLAN只能够静态划分'], answer: 'B', explanation: 'VLAN是一个广播域。' },
+            { id: 218, type: 'choice', category: '选择', content: '在OSI层次体系中，实际的通信是在()实体之间进行的', options: ['A、物理层', 'B、数据链路层', 'C、网络层', 'D、传输层'], answer: 'A', explanation: '实际通信在物理层实体之间进行。' },
+            { id: 219, type: 'choice', category: '选择', content: '下列哪一项是分组交换的缺点?()', options: ['A、信道利用率低', 'B、附加信息开销大', 'C、传输时延大', 'D、不同规格的终端很难相互通信'], answer: 'B', explanation: '分组交换的缺点是附加信息开销大。' },
+            { id: 220, type: 'choice', category: '选择', content: '目前防火墙的主流产品为()防火墙', options: ['A、包过滤', 'B、应用代理', 'C、状态检测', 'D、应用网关'], answer: 'C', explanation: '状态检测防火墙是目前主流。' },
+            { id: 221, type: 'choice', category: '选择', content: '若两台主机在同一子网中，则两台主机的IP地址分别与它们的子网掩码相"与"的结果一定()', options: ['A、为全0', 'B、为全1', 'C、相同', 'D、不同'], answer: 'C', explanation: '同一子网的网络地址相同。' },
+            { id: 222, type: 'choice', category: '选择', content: '域名与（）地址是一一对应的', options: ['A、IP地址', 'B、MAC地址', 'C、主机名称', 'D、以上都不是'], answer: 'D', explanation: '域名与IP地址不是严格一一对应的。' },
+            { id: 223, type: 'choice', category: '选择', content: 'www上每一个网页都有一个独立的地址，这些地址统称为（）', options: ['A、IP地址', 'B、域名地址', 'C、统一资源定位地址', 'D、www地址'], answer: 'C', explanation: 'URL是统一资源定位地址。' },
+            { id: 224, type: 'choice', category: '选择', content: 'TCP协议是指（）', options: ['A、互联网协议', 'B、因特网协议', 'C、传输控制协议', 'D、计算机网络协议'], answer: 'C', explanation: 'TCP是传输控制协议。' },
+            { id: 225, type: 'choice', category: '选择', content: '在TCP/IP中，IP负责（）', options: ['A、数据传输过程中的拆包和重组', 'B、在两台计算机之间建立网络连接', 'C、通过网络传输数据包', 'D、测试传输的数据包'], answer: 'A', explanation: 'IP负责数据报的传输和重组。' },
+            { id: 226, type: 'choice', category: '选择', content: '以下不属于网卡与内存的交互方式的是（）', options: ['A、I/O编程', 'B、广播方式', 'C、DMA方式', 'D、内存共享方式'], answer: 'B', explanation: '广播方式不是网卡与内存的交互方式。' },
+            { id: 227, type: 'choice', category: '选择', content: '令牌环网的拓扑结构是（）', options: ['A、环型', 'B、星型', 'C、总线型', 'D、树型'], answer: 'A', explanation: '令牌环网是环型拓扑。' },
+            { id: 228, type: 'choice', category: '选择', content: '出于安全的考虑，管理员希望阻止由外网进入的PING嗅探，那么管理员需要阻止哪一类协议？（）', options: ['A、TCP', 'B、UDP', 'C、IP', 'D、ICMP'], answer: 'D', explanation: 'PING使用ICMP协议。' },
+            { id: 229, type: 'judge', category: '判断', content: 'TCP协议经过3次握手建立连接，经过4次挥手释放连接。', answer: '正确', explanation: 'TCP三次握手建立连接，四次挥手释放连接。' },
+            { id: 230, type: 'judge', category: '判断', content: 'UDP提供面向连接的传输服务。', answer: '错误', explanation: 'UDP提供面向无连接的传输服务。' },
+            { id: 231, type: 'judge', category: '判断', content: 'IPv6中，IP地址长度为32位。', answer: '错误', explanation: 'IPv6地址长度为128位，IPv4为32位。' },
+            { id: 232, type: 'judge', category: '判断', content: 'HTTP默认的端口号是80。', answer: '正确', explanation: 'HTTP默认端口号是80。' },
+            { id: 233, type: 'judge', category: '判断', content: '路由器工作在数据链路层。', answer: '错误', explanation: '路由器工作在网络层。' },
+            { id: 234, type: 'judge', category: '判断', content: 'ARP协议用于将IP地址解析为MAC地址。', answer: '正确', explanation: 'ARP是地址解析协议。' },
+            { id: 235, type: 'judge', category: '判断', content: '交换机可以分隔广播域。', answer: '错误', explanation: '交换机只能分隔冲突域，路由器才能分隔广播域。' },
+            { id: 236, type: 'judge', category: '判断', content: 'CSMA/CD是以太网使用的介质访问控制方法。', answer: '正确', explanation: 'CSMA/CD即载波监听多点接入碰撞检测。' },
+            { id: 237, type: 'judge', category: '判断', content: 'TCP是一种不可靠的传输协议。', answer: '错误', explanation: 'TCP是一种可靠的面向连接的传输协议。' },
+            { id: 238, type: 'judge', category: '判断', content: 'DNS负责将域名转换为IP地址。', answer: '正确', explanation: 'DNS是域名系统，提供域名解析服务。' },
+            { id: 239, type: 'judge', category: '判断', content: 'MAC地址是32位的。', answer: '错误', explanation: 'MAC地址是48位的。' },
+            { id: 240, type: 'judge', category: '判断', content: '物理层负责比特流的传输。', answer: '正确', explanation: '物理层的主要功能是比特流传输。' },
+            { id: 241, type: 'judge', category: '判断', content: '数据链路层的传输单位是帧。', answer: '正确', explanation: '数据链路层以帧为单位传输。' },
+            { id: 242, type: 'judge', category: '判断', content: '网络层提供端到端的逻辑通信。', answer: '错误', explanation: '传输层提供端到端的逻辑通信，网络层提供主机到主机的通信。' },
+            { id: 243, type: 'judge', category: '判断', content: 'FTP基于UDP协议。', answer: '错误', explanation: 'FTP基于TCP协议。' },
+            { id: 244, type: 'judge', category: '判断', content: '127.x.x.x是回环地址。', answer: '正确', explanation: '127开头的IP地址是回环地址，用于本地测试。' },
+            { id: 245, type: 'judge', category: '判断', content: 'A类IP地址的网络号占16位。', answer: '错误', explanation: 'A类IP地址的网络号占8位。' },
+            { id: 246, type: 'judge', category: '判断', content: '子网掩码中网络部分为1，主机部分为0。', answer: '正确', explanation: '子网掩码的网络位为1，主机位为0。' },
+            { id: 247, type: 'calc', category: '计算', content: '主机1的IP地址为156.26.27.71，主机2的IP地址为156.26.27.110。其子网掩码为255.255.255.192；判断它们是不是在同一个子网上？', answer: '主机1: 156.26.27.71 & 255.255.255.192 = 156.26.27.64\n主机2: 156.26.27.110 & 255.255.255.192 = 156.26.27.64\n结论：子网号相同，属于同一个子网。', explanation: '将IP地址与子网掩码进行按位与运算，得到网络地址。' },
+            { id: 248, type: 'short', category: '简答', content: '简单描述TCP/IP体系四层结构？', answer: '1. 网络接口层：负责与物理网络的连接\n2. 网络层（国际互联层）：负责分组转发和路由选择\n3. 传输层：负责端到端的逻辑通信\n4. 应用层：为应用程序提供网络服务', explanation: 'TCP/IP四层模型从下到上依次为：网络接口层、网络层、传输层、应用层。' },
+            { id: 249, type: 'short', category: '简答', content: '简述OSI的七层协议体系结构？', answer: '1. 物理层：比特流传输\n2. 数据链路层：帧传输、差错检测\n3. 网络层：分组转发、路由选择\n4. 运输层：端到端可靠传输\n5. 会话层：建立和管理会话\n6. 表示层：数据加密、解密、压缩\n7. 应用层：为应用程序提供服务', explanation: 'OSI七层模型从下到上依次为：物理层、数据链路层、网络层、运输层、会话层、表示层、应用层。' },
+            { id: 250, type: 'short', category: '简答', content: '简述五层协议体系结构？', answer: '1. 物理层：比特流传输\n2. 数据链路层：帧传输\n3. 网络层：分组转发和路由选择\n4. 传输层：端到端逻辑通信\n5. 应用层：为应用程序提供服务', explanation: '五层协议是OSI七层的简化，合并了会话层和表示层。' },
+            { id: 251, type: 'short', category: '简答', content: '简述计算机网络的组成部分？', answer: '1. 若干个主机：向用户提供服务\n2. 通信子网：由结点交换机和通信链路组成，负责数据通信\n3. 一系列协议：为通信制定的规则和约定', explanation: '计算机网络由主机、通信子网和协议三部分组成。' },
+            { id: 252, type: 'short', category: '简答', content: '简述以太网交换机工作过程？', answer: '1. 当有一个帧到来时，检查其目的MAC地址\n2. 查询自己的MAC地址表，如果存在目的地址，则转发到对应端口\n3. 如果不存在，则泛洪（广播）到所有端口\n4. 广播后如果有主机响应，则将该主机的MAC地址自动添加到MAC地址表中', explanation: '以太网交换机根据MAC地址表进行帧转发。' },
+            { id: 253, type: 'short', category: '简答', content: '交换机转发信息的方法有哪几种？', answer: '1. 存储转发技术：先接收完整帧，检查无误后再转发\n2. 直接交换：边接收边转发，延迟小但不检查错误\n3. 无碎片直通式转发：接收到帧头后就转发，但会过滤小于64字节的帧', explanation: '三种转发方式各有优缺点。' },
+            { id: 254, type: 'short', category: '简答', content: '局域网的连接设备有哪些？它们工作在OSI模型的哪一层？', answer: '1. 网络适配器（网卡）：数据链路层\n2. 中继器：物理层\n3. 集线器：物理层\n4. 以太网交换机：数据链路层', explanation: '不同设备工作在不同层次。' },
+            { id: 255, type: 'short', category: '简答', content: '简述CSMA/CD检测工作原理？', answer: '1. 多点接入：总线型网络，多个站点共享总线\n2. 载波监听：发送前监听总线是否空闲\n3. 碰撞检测：边发送边监听，检测是否发生碰撞\n4. 碰撞处理：发生碰撞后立即停止发送，等待随机时间后重试', explanation: 'CSMA/CD是以太网的介质访问控制方法。' },
+            { id: 256, type: 'short', category: '简答', content: '流式存储音频/视频、流式实况音频/视频和交互式音频/视频都有何区别？', answer: '1. 流式存储音频/视频：存储在服务器上，用户可随时点播，可暂停、快进\n2. 流式实况音频/视频：实时采集和传输，如直播，不可暂停\n3. 交互式音频/视频：用户可实时交互，如视频会议，对时延敏感', explanation: '三种流式应用的区别主要在于内容来源和交互性。' }
+        ];
+
+        let userProgress = JSON.parse(localStorage.getItem('userProgress') || '{}');
+        let wrongQuestions = JSON.parse(localStorage.getItem('wrongQuestions') || '[]');
+        let studyStats = JSON.parse(localStorage.getItem('studyStats') || '{"total":0,"correct":0,"wrong":0,"maxStreak":0,"currentStreak":0,"typeStats":{}}');
+        let currentCategory = 'all';
+
+        function saveData() {
+            localStorage.setItem('userProgress', JSON.stringify(userProgress));
+            localStorage.setItem('wrongQuestions', JSON.stringify(wrongQuestions));
+            localStorage.setItem('studyStats', JSON.stringify(studyStats));
+        }
+
+        function getFilteredQuestions() {
+            if (currentCategory === 'all') return questions;
+            return questions.filter(q => q.category === currentCategory);
+        }
+
+        function renderQuestion(q, containerId, showResult = false) {
+            const container = document.getElementById(containerId);
+            const isAnswered = userProgress[q.id];
+            const userAnswer = isAnswered ? userProgress[q.id].answer : '';
+            const isCorrect = isAnswered ? userProgress[q.id].correct : null;
+            const show = showResult || isAnswered;
+
+            let html = `<div class="question-card" data-id="${q.id}">`;
+            html += `<div class="question-header"><span class="question-type type-${q.type}">${q.category}</span><span class="question-number">第${q.id}题</span></div>`;
+            html += `<div class="question-content">${q.content}</div>`;
+
+            if (q.type === 'choice') {
+                html += `<ul class="options">`;
+                q.options.forEach((opt, idx) => {
+                    const label = ['A','B','C','D'][idx];
+                    let className = 'option-item';
+                    if (show) {
+                        if (label === q.answer) className += ' correct';
+                        else if (userAnswer === label && isCorrect === false) className += ' incorrect';
+                        else if (userAnswer === label) className += ' selected';
+                    } else if (userAnswer === label) className += ' selected';
+                    html += `<li class="${className}" onclick="selectOption(${q.id}, '${label}', this)">`;
+                    html += `<span class="option-label">${label}</span>${opt}</li>`;
+                });
+                html += `</ul>`;
+            } else if (q.type === 'judge') {
+                html += `<ul class="options">`;
+                ['正确', '错误'].forEach(opt => {
+                    let className = 'option-item';
+                    if (show) {
+                        if (opt === q.answer) className += ' correct';
+                        else if (userAnswer === opt && isCorrect === false) className += ' incorrect';
+                        else if (userAnswer === opt) className += ' selected';
+                    } else if (userAnswer === opt) className += ' selected';
+                    html += `<li class="${className}" onclick="selectOption(${q.id}, '${opt}', this)">`;
+                    html += `<span class="option-label">${opt === '正确' ? '✓' : '✗'}</span>${opt}</li>`;
+                });
+                html += `</ul>`;
+            } else if (q.type === 'fill') {
+                const answers = q.answer.split(';');
+                html += `<div class="fill-area">`;
+                answers.forEach((ans, idx) => {
+                    let className = 'fill-input';
+                    if (show) {
+                        if (userAnswer.toLowerCase().includes(ans.toLowerCase()) || ans.toLowerCase().includes(userAnswer.toLowerCase())) className += ' correct';
+                        else if (userAnswer) className += ' incorrect';
+                    }
+                    html += `<input type="text" class="${className}" placeholder="请输入第${idx+1}个答案" value="${userAnswer}" onchange="saveFillAnswer(${q.id}, this.value)" ${show ? 'readonly' : ''}>`;
+                });
+                html += `</div>`;
+            } else if (q.type === 'calc' || q.type === 'short' || q.type === 'explain') {
+                let className = q.type === 'calc' ? 'calc-textarea' : (q.type === 'short' ? 'short-textarea' : 'short-textarea');
+                html += `<textarea class="${className}" placeholder="请输入答案" ${show ? 'readonly' : ''} onchange="saveTextAnswer(${q.id}, this.value)">${userAnswer}</textarea>`;
+            }
+
+            if (show) {
+                html += `<div class="answer-section"><div class="answer-label">参考答案</div><div class="answer-content">${q.answer}</div>`;
+                if (q.explanation) html += `<div class="answer-label">解析</div><div class="answer-content">${q.explanation}</div>`;
+                html += `</div>`;
+            }
+
+            if (!show && !isAnswered) {
+                html += `<div class="action-buttons">`;
+                if (q.type === 'choice' || q.type === 'judge') {
+                    html += `<button class="btn btn-primary" onclick="submitAnswer(${q.id})">提交答案</button>`;
+                } else {
+                    html += `<button class="btn btn-primary" onclick="submitAnswer(${q.id})">提交答案</button>`;
+                    html += `<button class="btn btn-secondary" onclick="showAnswer(${q.id})">查看答案</button>`;
+                }
+                html += `</div>`;
+            }
+
+            html += `</div>`;
+            container.innerHTML += html;
+        }
+
+        function renderQuestions(containerId, qs) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+            qs.forEach(q => renderQuestion(q, containerId));
+            updateProgress();
+        }
+
+        function selectOption(qId, answer, el) {
+            const card = el.closest('.question-card');
+            card.querySelectorAll('.option-item').forEach(item => item.classList.remove('selected'));
+            el.classList.add('selected');
+            userProgress[qId] = { answer, correct: null };
+            saveData();
+        }
+
+        function saveFillAnswer(qId, answer) {
+            userProgress[qId] = { answer, correct: null };
+            saveData();
+        }
+
+        function saveTextAnswer(qId, answer) {
+            userProgress[qId] = { answer, correct: null };
+            saveData();
+        }
+
+        function checkAnswer(qId) {
+            const q = questions.find(q => q.id === qId);
+            const progress = userProgress[qId];
+            if (!progress || !progress.answer) return false;
+
+            let isCorrect = false;
+            if (q.type === 'choice' || q.type === 'judge') {
+                isCorrect = progress.answer === q.answer;
+            } else if (q.type === 'fill') {
+                const userAnswers = progress.answer.toLowerCase().split(/[,，;；\s]+/).filter(a => a);
+                const correctAnswers = q.answer.toLowerCase().split(';');
+                isCorrect = userAnswers.some(ua => correctAnswers.some(ca => ca.includes(ua) || ua.includes(ca)));
+            } else {
+                isCorrect = true;
+            }
+
+            return isCorrect;
+        }
+
+        function submitAnswer(qId) {
+            const q = questions.find(q => q.id === qId);
+            const isCorrect = checkAnswer(qId);
+            userProgress[qId] = { ...userProgress[qId], correct: isCorrect };
+            saveData();
+
+            studyStats.total++;
+            if (isCorrect) {
+                studyStats.correct++;
+                studyStats.currentStreak++;
+                if (studyStats.currentStreak > studyStats.maxStreak) studyStats.maxStreak = studyStats.currentStreak;
+                const idx = wrongQuestions.findIndex(w => w.id === qId);
+                if (idx > -1) wrongQuestions.splice(idx, 1);
+            } else {
+                studyStats.wrong++;
+                studyStats.currentStreak = 0;
+                if (!wrongQuestions.find(w => w.id === qId)) {
+                    wrongQuestions.push(q);
+                }
+            }
+
+            if (!studyStats.typeStats[q.type]) studyStats.typeStats[q.type] = { correct: 0, total: 0 };
+            studyStats.typeStats[q.type].total++;
+            if (isCorrect) studyStats.typeStats[q.type].correct++;
+
+            saveData();
+            updateStats();
+            renderQuestions('question-list', getFilteredQuestions());
+
+            showModal(isCorrect);
+        }
+
+        function showAnswer(qId) {
+            const q = questions.find(q => q.id === qId);
+            userProgress[qId] = { answer: '', correct: false };
+            studyStats.wrong++;
+            studyStats.currentStreak = 0;
+            if (!studyStats.typeStats[q.type]) studyStats.typeStats[q.type] = { correct: 0, total: 0 };
+            studyStats.typeStats[q.type].total++;
+            if (!wrongQuestions.find(w => w.id === qId)) {
+                wrongQuestions.push(q);
+            }
+            saveData();
+            updateStats();
+            renderQuestions('question-list', getFilteredQuestions());
+        }
+
+        function showModal(isCorrect) {
+            const modal = document.getElementById('result-modal');
+            const icon = document.getElementById('result-icon');
+            const title = document.getElementById('result-title');
+            const text = document.getElementById('result-text');
+
+            if (isCorrect) {
+                icon.className = 'result-icon success';
+                icon.textContent = '✓';
+                title.textContent = '回答正确！';
+                text.textContent = '太棒了，继续加油！';
+            } else {
+                icon.className = 'result-icon error';
+                icon.textContent = '✗';
+                title.textContent = '回答错误';
+                text.textContent = '不要灰心，再接再厉！';
+            }
+            modal.classList.add('active');
+        }
+
+        function closeModal() {
+            document.getElementById('result-modal').classList.remove('active');
+        }
+
+        function updateProgress() {
+            const filtered = getFilteredQuestions();
+            const answered = filtered.filter(q => userProgress[q.id]).length;
+            const total = filtered.length;
+            const percent = total > 0 ? Math.round((answered / total) * 100) : 0;
+
+            document.getElementById('progress-info').textContent = `练习进度: ${answered}/${total}`;
+            document.getElementById('progress-fill').style.width = `${percent}%`;
+
+            const allAnswered = questions.filter(q => userProgress[q.id]).length;
+            const allCorrect = questions.filter(q => userProgress[q.id] && userProgress[q.id].correct).length;
+            const accuracy = allAnswered > 0 ? Math.round((allCorrect / allAnswered) * 100) : 0;
+
+            document.getElementById('total-done').textContent = allAnswered;
+            document.getElementById('accuracy').textContent = `${accuracy}%`;
+            document.getElementById('wrong-count').textContent = wrongQuestions.length;
+            document.getElementById('streak').textContent = studyStats.currentStreak || 0;
+        }
+
+        function updateStats() {
+            updateProgress();
+            document.getElementById('stats-total').textContent = studyStats.total;
+            document.getElementById('stats-correct').textContent = studyStats.correct;
+            document.getElementById('stats-wrong').textContent = studyStats.wrong;
+            document.getElementById('stats-max-streak').textContent = studyStats.maxStreak;
+
+            const types = { 'explain': 'explain', 'fill': 'fill', 'choice': 'choice', 'judge': 'judge', 'calc': 'calc', 'short': 'short' };
+            Object.keys(types).forEach(key => {
+                const stats = studyStats.typeStats[key] || { correct: 0, total: 0 };
+                const acc = stats.total > 0 ? Math.round((stats.correct / stats.total) * 100) : 0;
+                document.getElementById(`stats-${types[key]}-acc`).textContent = `${acc}%`;
+            });
+        }
+
+        function loadRandomQuestions() {
+            const shuffled = [...questions].sort(() => Math.random() - 0.5);
+            const randomQs = shuffled.slice(0, 10);
+            const container = document.getElementById('random-list');
+            container.innerHTML = '';
+            randomQs.forEach(q => renderQuestion(q, 'random-list'));
+        }
+
+        function clearAllProgress() {
+            if (confirm('确定要清空所有数据吗？此操作不可恢复！')) {
+                userProgress = {};
+                wrongQuestions = [];
+                studyStats = { total: 0, correct: 0, wrong: 0, maxStreak: 0, currentStreak: 0, typeStats: {} };
+                saveData();
+                updateStats();
+                renderQuestions('question-list', getFilteredQuestions());
+                document.getElementById('wrong-list').innerHTML = '';
+                document.getElementById('wrong-empty').style.display = 'block';
+                alert('所有数据已清空！');
+            }
+        }
+
+        document.querySelectorAll('.category-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                currentCategory = btn.dataset.category;
+                renderQuestions('question-list', getFilteredQuestions());
+            });
+        });
+
+        document.querySelectorAll('.nav-tab, .footer-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                const tab = btn.dataset.tab;
+                document.querySelectorAll('.nav-tab, .footer-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+                document.getElementById(`${tab}-tab`).classList.add('active');
+
+                if (tab === 'review') {
+                    const container = document.getElementById('wrong-list');
+                    container.innerHTML = '';
+                    if (wrongQuestions.length === 0) {
+                        document.getElementById('wrong-empty').style.display = 'block';
+                    } else {
+                        document.getElementById('wrong-empty').style.display = 'none';
+                        wrongQuestions.forEach(q => renderQuestion(q, 'wrong-list', false));
+                    }
+                } else if (tab === 'random') {
+                    loadRandomQuestions();
+                } else if (tab === 'stats') {
+                    updateStats();
+                }
+            });
+        });
+
+        renderQuestions('question-list', getFilteredQuestions());
+        updateStats();
+    </script>
+</body>
+</html>
