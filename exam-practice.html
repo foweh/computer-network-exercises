@@ -301,19 +301,13 @@ function saveErrors(errors) {
   localStorage.setItem(ERROR_KEY, JSON.stringify(errors));
 }
 
-// 题目去重 key
-function questionKey(q) {
-  if (q.qid) return 'id:' + q.qid;
-  return 'hash:' + hashStr(q.stem + '|' + q.type + '|' + q.answer);
+// 题目去重 key — 内容优先（同一道题在不同考试中qid不同，不可靠）
+function normalize(s) {
+  return (s || '').replace(/[\n\t\r]+/g, ' ').replace(/\s+/g, ' ').trim();
 }
 
-function hashStr(str) {
-  let h = 0;
-  for (let i = 0; i < str.length; i++) {
-    h = ((h << 5) - h) + str.charCodeAt(i);
-    h |= 0;
-  }
-  return String(h);
+function questionKey(q) {
+  return normalize(q.stem) + '|||' + normalize(q.type) + '|||' + normalize(q.answer);
 }
 
 // 合并题库（去重）
