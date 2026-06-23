@@ -314,16 +314,16 @@ function importJSON(jsonStr) {
     return mergeBank(incoming);
 }
 
-async function loadMergedJSON() {
+async function loadMergedJSON(silent) {
     try {
         const resp = await fetch(MERGED_URL);
         if (!resp.ok) throw new Error('HTTP ' + resp.status);
         const json = await resp.text();
         const added = importJSON(json);
-        alert(`✅ 已加载内置题库，新增 ${added} 题，题库共 ${questions.length} 题`);
+        if (!silent) alert(`✅ 已加载内置题库，新增 ${added} 题，题库共 ${questions.length} 题`);
         refreshAll();
     } catch(e) {
-        alert('❌ 加载失败: ' + e.message + '\n请确保 merged.json 与此页面在同一目录');
+        if (!silent) alert('❌ 加载失败: ' + e.message + '\n请确保 merged.json 与此页面在同一目录');
     }
 }
 
@@ -930,7 +930,7 @@ function processFile(file) {
     reader.readAsText(file);
 }
 
-document.getElementById('btn-load-merged').addEventListener('click', loadMergedJSON);
+document.getElementById('btn-load-merged').addEventListener('click', () => loadMergedJSON(false));
 
 document.getElementById('btn-export-bank').addEventListener('click', () => {
     if (!questions.length) { alert('题库为空！'); return; }
@@ -1046,6 +1046,11 @@ document.addEventListener('keydown', e => {
 // ═══════════════════════════ 初始化 ═══════════════════════════
 loadData();
 refreshAll();
+
+// 首次打开自动加载内置题库
+if (questions.length === 0) {
+    loadMergedJSON(true);
+}
 </script>
 </body>
 </html>
