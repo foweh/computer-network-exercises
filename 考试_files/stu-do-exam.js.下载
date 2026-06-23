@@ -1,0 +1,1276 @@
+//function timeOverSubmitTest() {
+//    if(!window.OverTimeSubmitTimers){
+//        window.OverTimeSubmitTimers = [];
+//    }
+//    var overTimeSubmitTimers =  window.OverTimeSubmitTimers;
+//    for (var i = 0; i < 3; i++) {
+//        var overTimer = setTimeout(function() {
+//            submitForm(false, false);
+//        }, i * 5000);
+//        overTimeSubmitTimers.push(overTimer);
+//    }
+//}
+
+////首次进入考试日志
+//function entryExamLog(data){
+//    var snapshotMonitor = $('#snapshotMonitor').val();
+//    if(snapshotMonitor != 1){
+//        return;
+//    }
+//    var eventType = 0;
+//    pushExamMonitorLog(eventType,data);
+//}
+//
+////重新进入考试日志
+//function rentryExamLog(data){
+//    var snapshotMonitor = $('#snapshotMonitor').val();
+//    if(snapshotMonitor != 1){
+//        return;
+//    }
+//    var eventType = 1;
+//    pushExamMonitorLog(eventType,data);
+//}
+
+function addChoice(obj) {
+    var subObj = $(obj).find(".addChoice");
+    var qid = $(subObj).attr("qid");
+
+    if($(subObj).hasClass("check_answer")) {
+        $(subObj).removeClass("check_answer");
+    } else {
+        $(".choice" + qid).removeClass("check_answer");
+        $(subObj).addClass("check_answer");
+    }
+
+    var choiceContent = "";
+    $(".choice" + qid).each(function(index,ele){
+        if($(this).hasClass("check_answer")){
+            choiceContent = choiceContent + $(this).attr("data");
+        }
+    });
+
+    $("#answer" + qid).val(choiceContent);
+}
+
+// 无障碍定制单选
+function tabAddChoice(obj) {
+	var subObj = $(obj).find(".addChoice");
+	var qid = $(subObj).attr("qid");
+	if (event.keyCode == 13) {
+		event.preventDefault(); // 阻止默认的键盘点击事件
+		if($(subObj).hasClass("check_answer")) {
+			$(subObj).removeClass("check_answer");
+		} else {
+			$(".choice" + qid).removeClass("check_answer");
+			$(subObj).addClass("check_answer");
+			$(subObj).parent().attr("aria-checked","true");
+			$(subObj).parent().attr("aria-pressed","true");
+		}
+
+		var choiceContent = "";
+		$(".choice" + qid).each(function(index,ele){
+			if($(this).hasClass("check_answer")){
+				choiceContent = choiceContent + $(this).attr("data");
+			} else {
+				$(this).parent().attr("aria-checked","false");
+				$(this).parent().attr("aria-pressed","false");
+			}
+		});
+
+		$("#answer" + qid).val(choiceContent);
+	} else if (event.keyCode == 32) { // 空格选中
+		event.preventDefault(); // 阻止默认的键盘点击事件
+		$(".choice" + qid).removeClass("check_answer");
+		$(subObj).addClass("check_answer");
+
+		var choiceContent = "";
+		$(".choice" + qid).each(function(index,ele){
+			if($(this).hasClass("check_answer")){
+				choiceContent = choiceContent + $(this).attr("data");
+				$(this).parent(".answerBg").attr("aria-checked","true");
+				$(this).parent(".answerBg").attr("aria-pressed","true");
+			} else {
+				$(this).parent(".answerBg").attr("aria-checked","false");
+				$(this).parent(".answerBg").attr("aria-pressed","false");
+			}
+		});
+
+		$("#answer" + qid).val(choiceContent);
+	}
+}
+// 无障碍定制多选
+function tabAddMultipleChoice(obj) {
+	if (event.keyCode == 13 || event.keyCode == 32) {
+		event.preventDefault(); // 阻止默认的键盘点击事件
+		var subObj = $(obj).find(".addMultipleChoice");
+		var qid = $(subObj).attr("qid");
+
+		if($(subObj).hasClass("check_answer_dx")) {
+			$(subObj).removeClass("check_answer_dx");
+			$(obj).attr("aria-checked","false");
+			$(obj).attr("aria-pressed","false");
+		} else {
+			$(subObj).addClass("check_answer_dx");
+			$(obj).attr("aria-checked","true");
+			$(obj).attr("aria-pressed","true");
+		}
+
+		var choiceContent = "";
+		$(".choice" + qid).each(function(){
+			if($(this).hasClass("check_answer_dx")){
+				choiceContent = choiceContent + $(this).attr("data");
+			}
+		});
+		$("#answer" + qid).val(choiceContent);
+	}
+}
+
+function addChoiceByBType(obj) {
+    var qid = $(obj).attr("qid");
+    var parentDiv = $(obj).parent();
+
+    if($(obj).hasClass("check_answer")) {
+        $(obj).removeClass("check_answer");
+    } else {
+        parentDiv.find(".choice" + qid).removeClass("check_answer");
+        $(obj).addClass("check_answer");
+    }
+
+    var answerPair=[];
+    $(".BType_"+qid).each(function () {
+        var name = $(this).attr("index");
+        var contentStr = "";
+        $(this).find(".choice" + qid).each(function(){
+            if($(this).hasClass("check_answer")){
+                contentStr = $(this).attr("choice_name");
+                return false;
+            }
+        });
+
+        var obj={};
+        obj.name = parseInt(name);
+        obj.content = contentStr;
+        answerPair.push(obj);
+    });
+
+    var answerStr=JSON.stringify(answerPair);
+    $("#answer" + qid).val(answerStr);
+}
+
+function addMultipleChoice(obj) {
+    var subObj = $(obj).find(".addMultipleChoice");
+    var qid = $(subObj).attr("qid");
+
+    if($(subObj).hasClass("check_answer_dx")) {
+        $(subObj).removeClass("check_answer_dx");
+    } else {
+        $(subObj).addClass("check_answer_dx");
+    }
+
+    var choiceContent = "";
+    $(".choice" + qid).each(function(){
+        if($(this).hasClass("check_answer_dx")){
+            choiceContent = choiceContent + $(this).attr("data");
+        }
+    });
+    $("#answer" + qid).val(choiceContent);
+}
+
+function topreview(){
+   if($('#teacherBrowseMode').val() == 'true'){
+       var courseId = $("#courseId").val();
+       var classId = $("#classId").val();
+       var cpi = $("#cpi").val();
+       var start = $("#start").val();
+	   var paperId = $("#paperId").val();
+       var url = _HOST_CP2_ + "/mooc2/exam/preview-browse?courseId=" + courseId
+           + "&classId="+ classId + "&paperId="+ paperId + "&start="+ start + "&cpi="+cpi + "&ut=t";
+       var qbanksystem =  $('#qbanksystem').val();
+       var qbankbackurl =  $('#qbankbackurl').val();
+       if(qbanksystem == 1 && qbankbackurl != ''){
+           url  = url + "&qbanksystem=" + qbanksystem + "&qbankbackurl=" + qbankbackurl;
+       }
+       window.location.href = url;
+	   return;
+	}
+    submitForm(true,false, function(data) {
+        var openc = $("#openc").val();
+        var courseId = $("#courseId").val();
+        var classId = $("#classId").val();
+        var examRelationId = $("#testPaperId").val();
+        var examRelationAnswerId = $("#testUserRelationId").val();
+        var start = $("#start").val();
+        var cpi = $("#cpi").val();
+        if(typeof(cpi)=="undefined"){
+            cpi = 0;
+        }
+        var webSnapshotMonitor = $("#webSnapshotMonitor").val() || 0;
+        var url = _HOST_CP2_ + "/mooc2/exam/preview?"
+            + "courseId=" + courseId
+            + "&classId="+ classId
+            + "&start="+ start
+            + "&cpi="+cpi
+            + "&examRelationId=" + examRelationId
+            + "&examRelationAnswerId=" + examRelationAnswerId
+            + "&newMooc=true"
+            + "&openc="+openc;
+var monitorStatus = $("#monitorStatus").val();
+        var monitorOp = $("#monitorOp").val();
+        url  += "&monitorStatus=" + monitorStatus + "&monitorOp=" + monitorOp;
+
+        if(webSnapshotMonitor == 1){
+        	url +=  '&webSnapshotMonitor=' + webSnapshotMonitor;
+        }
+        
+        if($("#isChaoxingExamPc").val() == 'true'){
+        	url +=  '&sc=' + $('#screenAndCaptureCall').val();		
+        }
+        
+        var examsystem = $("#examsystem").val() || 0;
+    	if(examsystem == 1){
+    	    url = url + "&examsystem=" + examsystem;
+    	}
+        
+        var qbanksystem =  $('#qbanksystem').val();
+        var qbankbackurl =  $('#qbankbackurl').val();
+        if(qbanksystem == 1 && qbankbackurl != ''){
+            url  = url + "&qbanksystem=" + qbanksystem + "&qbankbackurl=" + qbankbackurl;
+        }
+
+        try {
+            var array=data.split("|");
+            var lastUpdateTime=array[0];
+            var remainTime=array[1];
+            var enc=array[2];
+            url = url + "&remainTimeParam="+remainTime+"&relationAnswerLastUpdateTime="+lastUpdateTime+"&enc="+enc;
+        } catch (e) {}
+        window.location.href = url;
+    });
+}
+
+
+/*
+submitAjaxHandle = null ;
+//交卷
+function submitForm(tempSave, isback,callback) {
+    if(tempSave){
+        submitAjaxHandle != null && submitAjaxHandle.abort();
+    }
+
+    var pos = "";
+    try{
+        //todo 引入js
+        pos = getEnc();
+    }catch(ex){}
+
+    var timeOver = $("#timeOver").val();
+    $("#tempSave").val(tempSave);
+
+    setStuAnswerOfSomeQues();
+    var param=getParamStr();
+    param = param + "&pos=" + pos + "&version=1";
+    var ajax_url = $("#saveUrl").val()  + param;
+    var ajax_type = "post";
+    var ajax_data = $("#submitTest").serialize();
+
+    submitAjaxHandle = $.ajax({
+        type : ajax_type,
+        url : ajax_url,
+        data :ajax_data,
+        dataType: "json",
+        success : function(result){
+            var status = result.status;
+            var msg = result.msg;
+
+            if(status == "error"){
+                $.toast({type: 'failure', content: msg});
+                submitFlag = true;
+                return ;
+            }
+
+            if(status == "submitted" || status == "forceSubmitted"){
+                removeTimeOverSubmitTimers();
+                closeMonitor();
+                $.toast({type: 'notice', content: '考试已经提交，正在跳转...'});
+                jumpExamLook();
+                return;
+            }
+
+            if(tempSave){
+                answerRecordLog && answerRecordLog(result.monitorparam);
+            }else{
+                finalSubmitExamLog({'submitStyle' : 0});
+            }
+
+            if(isback == true) {
+            	closeMonitor();
+            	jumpExamLook();
+            } else if(timeOver == "true"){
+                removeTimeOverSubmitTimers();
+                closeMonitor();
+                var consumeMinutes = result.consumeMinutes || 0;
+				if(consumeMinutes > 0){
+					$('.consumeMinutes').html(consumeMinutes);
+				}
+                $("#timeOverSubmitConfirmPop .confirmClose").attr('onclick','timOverconfirmCloseCallBack();');
+                $("#timeOverSubmitConfirmPop").fullFadeIn();
+                return;
+            }else {
+            	setTimeout(function(){
+            		callback && callback(result.data);
+            	},10);
+            }
+        },
+        error: function(result){
+        	// $.toast({type: 'failure', content: '提交失败'});
+        },
+        complete : function(){
+            submitAjaxHandle = null;
+        }
+    });
+}
+
+function setStuAnswerOfSomeQues(){
+    var nowQuestionId=$("#questionId").val();
+    if(!nowQuestionId){
+        return;
+    }
+
+    var nowTypeQuestionId="type"+nowQuestionId;
+    var questionType=$("input[name='"+nowTypeQuestionId+"']").val();
+    // 避免自动提交时简答题答案丢失
+    if (questionType == 4 || questionType == 5 || questionType == 6 || questionType == 7 || questionType == 8 || questionType ==17 || questionType == 18) {
+        var me = UE.getEditor('answer' + nowQuestionId);
+        me && me.sync();
+    }else if (questionType == 2 || questionType == 9 || questionType == 10) {
+		var blankStr = "answerEditor" + nowQuestionId;
+		var blankInputs = $("textarea[name^='" + blankStr + "']");
+		blankInputs.length > 0 && blankInputs.each(function () {
+			var blankEditorId = $(this).attr('id');
+			if(blankEditorId){
+			    var me = UE.getEditor(blankEditorId);
+			    me && me.sync();
+			}
+		});
+	}
+
+    if(questionType==11){
+        var answerPair=[];
+        $(".line_answer").find(".select").each(function(index){
+            var checked=$(this).attr("value");
+            var obj={};
+            obj.name=(index+1);
+            obj.content=(checked);
+            answerPair.push(obj);
+        });
+        var answerStr=JSON.stringify(answerPair);
+        $("input[name='answer"+nowQuestionId+"']").val(answerStr);
+    }else if(questionType == 13){
+        var answerStr="";
+        $(".orderSelect").find(".select").each(function(){
+            var checked=$(this).attr("value");
+            answerStr=answerStr+checked;
+        });
+        $("input[name='answer"+nowQuestionId+"']").val(answerStr);
+
+    }else if(questionType == 14){//新完型填空
+        var answerObj={};
+        $(".filling_answer").each(function(){
+            var itemId=$(this).find("input[name='itemId']").val();
+            var checked=$(this).find(".answerClass").val();
+            if(checked == undefined){
+                checked="";
+            }
+            var info={};
+            info.answer=checked;
+            answerObj[itemId]=info;
+        });
+        var answer=[];
+        answer.push(answerObj);
+        var answerStr=JSON.stringify(answer);
+        $("input[name='answer"+nowQuestionId+"']").val(answerStr);
+    } else if (questionType == 15 || questionType == 16 || questionType == 19) {// 新阅读理解、综合题
+        var answerObj={};
+        $("input[name='readCompreHension-childType']").each(function(index){
+            var type=$(this).val();
+            var itemId=$(this).next().val();
+            var itemAnswer="";
+            switch(parseInt(type)){
+                case 0:
+                case 3:{
+                    itemAnswer=$("input[name='answer"+itemId+"']").val();
+                    break;
+                }
+                case 1:{
+                    $("input[name='answer"+itemId+"']").each(function() {
+                        itemAnswer +=$(this).val();
+                    });
+                    var randomOptions = $("#randomOptions").val();
+                    itemAnswer = randomOptions ? sortMultiAnswer(itemAnswer) : itemAnswer;
+                    break;
+                }
+                case 2:{
+                    var answerItem=[];
+                    var blankNum=$("input[name='"+itemId+"blankNum']").val();
+                    for(var i=1;i<=blankNum;i++){
+                        var answerEditorId="answerEditor"+itemId;
+                        answerEditorId=answerEditorId+i;
+                        var answerItemStr=UE.getEditor(answerEditorId).getContent();
+                        var item={};
+                        item.content=answerItemStr;
+                        item.name=i.toString();
+                        answerItem.push(item);
+                    }
+                    itemAnswer=answerItem;
+                    break;
+                }
+                case 4:{
+                    var answerEditorId = "answer"+itemId;
+                    var answerEditorStr = UE.getEditor(answerEditorId).getContent();
+                    itemAnswer=answerEditorStr;
+                    break;
+                }
+                default: { }
+            }
+
+            var info={};
+            info.type=parseInt(type);
+
+            info.answer=(itemAnswer !== undefined ? itemAnswer:"");
+            answerObj[itemId]=info;
+        });
+        var answer=[];
+        answer.push(answerObj);
+        var answerStr=JSON.stringify(answer);
+        $("input[name='answer"+nowQuestionId+"']").val(answerStr);
+    } else if (questionType == 17) {
+        var answer = [];
+        var language=$(".languageSelect").attr("value");
+        var richcode=editor.getContent();
+        var code=editor.getPlainTxt(); code=UE.utils.html(code);
+        var item={};
+        item.language=parseInt(language);
+        item.answer=richcode;
+        item.answerTxt=code;
+        answer[0]=item;
+        var answerStr = JSON.stringify(answer);
+        $("input[name='answer" + nowQuestionId + "']").val(answerStr);
+    }else if(questionType == 1){
+        var randomOptions = $("#randomOptions").val();
+        var multipleChoiceInput=$("input[name='answers" + nowQuestionId + "']");
+        var mulChoice=multipleChoiceInput.val();
+        mulChoice = randomOptions ? sortMultiAnswer(mulChoice) : mulChoice;
+        multipleChoiceInput.val(mulChoice);
+    }
+}
+
+*/
+
+//function goExamList() {
+//    var qbanksystem =  $('#qbanksystem').val();
+//    var qbankbackurl =  $('#qbankbackurl').val();
+//    if(qbanksystem == 1 && qbankbackurl !== ''){
+//        qbankbackurl = decodeURIComponent(qbankbackurl);
+//        location.href = qbankbackurl;
+//        return;
+//    }
+//
+//    var courseId = $("#courseId").val();
+//    var classId = $("#classId").val();
+//    var cpi = $("#cpi").val();
+//    var openc = $("#openc").val() || '';
+//    if(typeof(cpi)=="undefined"){
+//        cpi = 0;
+//    }
+//    var examsystem=$("#examsystem").val();
+//    location.href =  _HOST_CP2_ + "/mooc2/exam/list?classId="+classId+"&courseId=" + courseId +"&cpi=" +cpi+ "&ut=s"  +
+//        "&examsystem=" + examsystem + "&openc=" + openc;
+//}
+
+
+//提交答案日志
+//function answerRecordLog(answerData){
+//    var snapshotMonitor = $('#snapshotMonitor').val();
+//    if(snapshotMonitor !== 1){
+//        return;
+//    }
+//    if(!answerData){
+//        return;
+//    }
+//    var eventType = 3;
+//    pushExamMonitorLog(eventType,answerData);
+//}
+
+
+//function pushExamMonitorLog(eventType,data) {
+//    try{
+//        var url = '/keeper/api/receiveExamLogs';
+//        var currentFaceId=data.currentFaceId;
+//        if(eventType == 0 && (typeof(currentFaceId) == "undefined" || currentFaceId == "")){
+//            var _version = data.version;
+//            if (typeof (_version) != "undefined" && _version !== -1) {
+//                url = '/keeper/api/receiveExamLogs?currentFaceId=false&eventType=' + eventType;
+//            }
+//        }
+//
+//        var courseId = $('#courseId').val();
+//        var examRelationId = $('#testPaperId').val();
+//        var answerId = $('#testUserRelationId').val();
+//        var clazzId = $('#classId').val();
+//        var personId = $('#cpi').val();
+//        var log = {
+//            "courseId":courseId,
+//            "clazzId": clazzId,
+//            "personId":personId,
+//            "examRelationId":examRelationId,
+//            "answerId":answerId,
+//            "eventType":eventType,
+//            "ip":ip,
+//            "data":data
+//        };
+//        var monitorEnc = $('#monitorEnc').val();
+//        $.ajax({
+//            type : 'post',
+//            dataType : 'json',
+//            url : url,
+//            data : {"log":JSON.stringify(log), "enc":monitorEnc},
+//            success : function(data) {
+//            }
+//        });
+//    }catch(err){}
+//}
+
+//最终提交考试日志
+//function finalSubmitExamLog(data){
+//    var snapshotMonitor = $('#snapshotMonitor').val();
+//    if(snapshotMonitor !== 1){
+//        return;
+//    }
+//    var eventType = 2;
+//    pushExamMonitorLog(eventType,data);
+//}
+
+
+//function removeTimeOverSubmitTimers(){
+//    var overTimeSubmitTimers = window.OverTimeSubmitTimers;
+//    if(!overTimeSubmitTimers || overTimeSubmitTimers.length == 0){
+//        return ;
+//    }
+//    for(var i = 0 ; i < overTimeSubmitTimers.length; i++){
+//        var overTimeSubmitTimer = overTimeSubmitTimers[i];
+//        if(overTimeSubmitTimer){
+//            clearTimeout(overTimeSubmitTimer);
+//        }
+//    }
+//}
+
+//function sortMultiAnswer(answer) {
+//    if ( !answer || answer.trim().length == 0) {
+//        return "";
+//    }
+//    var answerArray = answer.trim().split('');
+//    var sortedAnswerArray = answerArray.sort();
+//    return sortedAnswerArray.join('');
+//}
+
+/*
+function getParamStr(){
+    var testPaperId=$("#testPaperId").val();
+    var testUserRelationId=$("#testUserRelationId").val();
+    var courseId=$("#courseId").val();
+    var classId=$("#classId").val();
+    var tempSave=$("#tempSave").val();
+    var cpi=$("#cpi").val();
+    if(typeof(cpi)=="undefined"){
+        cpi = 0;
+    }
+    var param="?classId="
+        + classId
+        + "&courseId="
+        + courseId
+        + "&testPaperId="
+        + testPaperId
+        + "&testUserRelationId="
+        + testUserRelationId
+        + "&cpi="
+        + cpi
+        + "&tempSave="
+        + tempSave;
+    return param;
+}
+*/
+
+function answerDirectSubmit(confirm){
+	var groupMinLimitTime = $("#groupMinLimitTime").val() || 0;
+	var groupLimitTimeType = $('#groupLimitTimeType').val() || 0;
+	if (groupLimitTimeType > 0 && groupMinLimitTime > 0) {
+		groupPaperLimitTimePopShow("groupPaperLimitTimeSubmitPop");
+		return;
+	}
+	 if(!confirm){
+		 var offlineExam = $('#offlineExam').val() || 0;
+		 var tip = I18N.confirmSub;
+		 if (offlineExam == 2) {
+			 tip = I18N.mixedExamSubmitTips1;
+		 }
+		 $("#submitConfirmPop .popWord").html(tip);
+		  $("#submitConfirmPop .confirm").attr('onclick','answerDirectSubmit(1);');
+		  $("#submitConfirmPop").fullFadeIn();
+      return;
+	}
+	/*
+	var callBack = function(){
+	    $.toast({type: 'success', content: '提交成功'});
+        closeMonitor();
+        setTimeout(function() {
+            jumpExamLook();
+        }, 1000);
+	};
+	submitForm(false, false,callBack);
+	*/
+	submitForm(false, false);
+}
+
+
+var SingleQuesLimitTime;
+function checkStartSingleQuesLimitTimeTimer() {
+	var limitTimeType = $('#limitTimeType').val() || 0;
+	if(limitTimeType == 0){
+		return;
+	}
+	SingleQuesLimitTime =  loadSingleQuesLimitTime();
+	if(SingleQuesLimitTime < 0){
+		SingleQuesLimitTime = $('#singleQuesLimitTime').val();
+	}
+	if (SingleQuesLimitTime >= 0) {
+		var clockTime = secondsToClockTime();
+		$(".singleQuesLimitTimeClock").html(clockTime);
+		singleTimerHandle = setInterval("singleQuesLimitTimeTimer()", 1000);
+	}
+}
+
+var groupPaperLimitTime;
+var groupLimitTimeTimer;
+function checkStartGroupPaperLimitTimeTimer() {
+	var groupLimitTimeType = $('#groupLimitTimeType').val() || 0;
+	if(groupLimitTimeType == 0){
+		return;
+	}
+	groupPaperLimitTime = calculationStartGroupTime();
+	if(groupPaperLimitTime < 0){
+		// groupPaperLimitTime = $('#groupMaxLimitTime').val();
+		groupPaperLimitTime = 0;
+	}
+	if (groupPaperLimitTime >= 0) {
+		var clockTime = secondsToClockTimeByLimit(groupPaperLimitTime);
+		$(".groupPaperLimitTimeClock").html(clockTime);
+		groupLimitTimeTimer = setInterval("groupPaperLimitTimeTimer()", 1000);
+	}
+}
+
+
+function calculationStartGroupTime() {
+	var groupMaxLimitTime = $('#groupMaxLimitTime').val();
+	var groupReceiveTime = $('#groupReceiveTime').val();
+	groupReceiveTime = Math.floor(groupReceiveTime / 1000);
+	var timestamp = new Date().getTime();
+	timestamp = Math.floor(timestamp / 1000);
+	var startTime = timestamp - groupReceiveTime;
+	return groupMaxLimitTime - startTime;
+}
+
+function secondsToClockTime(){
+	var minutes = '00';
+	var seconds = '00';
+	var clockTime = minutes + ':' + seconds ;
+	if (SingleQuesLimitTime > 0) {
+	    minutes = Math.floor(SingleQuesLimitTime / 60);
+		if (minutes < 10) {
+			minutes = "0" + minutes;
+		}
+		seconds = Math.floor(SingleQuesLimitTime % 60);
+		if (seconds < 10) {
+			seconds = "0" + seconds;
+		}
+		clockTime = minutes + ':' + seconds ;
+	}
+	return clockTime;
+}
+
+function secondsToClockTimeByLimit(limitTime){
+	var minutes = '00';
+	var seconds = '00';
+	var clockTime = minutes + ':' + seconds;
+	if (limitTime > 0) {
+		minutes = Math.floor(limitTime / 60);
+		if (minutes < 10) {
+			minutes = "0" + minutes;
+		}
+		seconds = Math.floor(limitTime % 60);
+		if (seconds < 10) {
+			seconds = "0" + seconds;
+		}
+		clockTime = minutes + ':' + seconds;
+	}
+	return clockTime;
+}
+
+function singleQuesLimitTimeTimer() {
+	var clockTime = secondsToClockTime();
+	$(".singleQuesLimitTimeClock").html(clockTime);
+	$("#singleQuesLimitTime").val(SingleQuesLimitTime);
+	storeSingleQuesLimitTime(SingleQuesLimitTime);
+	if (SingleQuesLimitTime > 0) {
+		--SingleQuesLimitTime;
+	} else {
+		clearInterval(singleTimerHandle);
+		$('#singleQuesLimitTimePop').fullFadeIn();
+	}
+}
+
+function groupPaperLimitTimeTimer() {
+	var clockTime = secondsToClockTimeByLimit(groupPaperLimitTime);
+	$(".groupPaperLimitTimeClock").html(clockTime);
+	var groupMinLimitTime = $("#groupMinLimitTime").val() || 0;
+	if (groupMinLimitTime > 0) {
+		$("#groupMinLimitTime").val(groupPaperLimitTime);
+	}
+	$("#groupMaxLimitTime").val(groupPaperLimitTime);
+	if (groupPaperLimitTime > 0) {
+		--groupPaperLimitTime;
+	} else {
+		clearInterval(groupLimitTimeTimer);
+		groupPaperLimitTimePopShow("groupPaperLimitTimeOverPop");
+	}
+}
+
+function storeSingleQuesLimitTime(seconds){
+	if(!window.sessionStorage){
+		return;
+	}
+	if(sessionStorage.length > 0){
+		for (var i = 0; i < sessionStorage.length; i++) {
+		    var key = sessionStorage.key(i);
+		    if(key && key.indexOf('singleQuesLimitTime_') > -1){
+		    	sessionStorage.removeItem(key);
+		    }
+		}
+		//sessionStorage.clear();
+	}
+	var receiveTime = $('#receiveTime').val() || 0;
+	var key = 'singleQuesLimitTime_'+ receiveTime + "_" + $('#testUserRelationId').val() + "_" + $('#classId').val() + "_" + $('#questionId').val();
+	sessionStorage.setItem(key, seconds);
+}
+
+function loadSingleQuesLimitTime(){
+	if(!window.sessionStorage){
+		return -1;
+	}
+	if($('#forbidAnsweredAgain').val() == 1){
+		return -1;
+	}
+	var receiveTime = $('#receiveTime').val() || 0;
+	var key = 'singleQuesLimitTime_'+ receiveTime + "_" + $('#testUserRelationId').val() + "_" + $('#classId').val() + "_" + $('#questionId').val();
+	var seconds = sessionStorage.getItem(key);
+	if(seconds != null && $.isNumeric(seconds)){
+		return parseInt(seconds);
+	}
+	return -1;
+}
+
+function singleQuesLimitTimeConfirm(submit){
+	if(submit && submit == 1){
+		$("#timeOver").val(true);
+		submitForm(false, false);
+		return;
+	}
+	getTheNextQuestion(1);
+}
+
+function groupLimitTimeConfirm(submit){
+	var groupLimitTimeType = $("#groupLimitTimeType").val() || 0;
+	var groupMinLimitTime = $("#groupMinLimitTime").val() || 0;
+	if(groupLimitTimeType > 0 && groupMinLimitTime && groupMinLimitTime > 0){
+		groupPaperLimitTimePopShow("");
+		return;
+	}
+	if(submit && submit == 1){
+		$("#timeOver").val(true);
+		submitForm(false, false);
+		return;
+	}
+
+	var nextGroupIndexDiff = $("#nextGroupIndexDiff").val() || 0;
+	var groupStart = $("#groupStart").val() || 0;
+	var start = $("#start").val() || 0;
+	if (groupStart > 0) {
+		var diff = parseInt(groupStart) - parseInt(start);
+		if (diff > 0) {
+			nextGroupIndexDiff = diff;
+		}
+		$("#groupStart").val(0)
+	}
+	$("#checkGroupPop").val(1);
+	getTheNextQuestion(parseInt(nextGroupIndexDiff));
+}
+
+
+function checkGroupPaperLimitTimeRemainTime(){
+	var groupLimitTimeType = $('#groupLimitTimeType').val() || 0;
+	if(groupLimitTimeType == 0){
+		return;
+	}
+
+	var leaveTime = window.Leave_Exam_Page || -1;
+	var backTime = window.Back_Exam_Page || -1 ;
+	if (leaveTime <=0 || backTime <= 0) {
+		return;
+	}
+
+	var groupLimitTime = window.Leave_groupPaperLimitTime || -1;
+	if (groupLimitTime < 0) {
+		return;
+	}
+
+	var diffMillSeconds = parseInt(backTime) - parseInt(leaveTime);
+	var useSeconds = Math.ceil((diffMillSeconds / 1000).toFixed(3));
+	if(useSeconds <= 0){
+		return
+	}
+
+	var remainSeconds = parseInt(groupLimitTime) - parseInt(useSeconds);
+	if(remainSeconds <= 0){
+		remainSeconds  = 1;
+	}
+	console.log(groupLimitTimeTimer)
+	clearInterval(groupLimitTimeTimer);
+	groupPaperLimitTime = remainSeconds;
+	groupLimitTimeTimer = setInterval("groupPaperLimitTimeTimer()", 1000);
+}
+
+function checkSingleQuesLimitTimeRemainTime(){
+	var limitTimeType = $('#limitTimeType').val() || 0;
+	if(limitTimeType == 0){
+		return;
+	}
+	
+	var leaveTime = window.Leave_Exam_Page || -1;
+	var backTime = window.Back_Exam_Page || -1 ;
+	if (leaveTime <=0 || backTime <= 0) {
+		return;
+	}
+	
+	var singleQuesLimitTime = window.Leave_SingleQuesLimitTime || -1;
+	if (singleQuesLimitTime < 0) {
+		return;
+	}
+	
+	var diffMillSeconds = parseInt(backTime) - parseInt(leaveTime);
+	var useSeconds = Math.ceil((diffMillSeconds / 1000).toFixed(3));
+	if(useSeconds <= 0){
+		return
+	}
+	
+	var remainSeconds = parseInt(singleQuesLimitTime) - parseInt(useSeconds);
+	if(remainSeconds <= 0){
+		remainSeconds  = 1;
+	}
+	clearInterval(singleTimerHandle);
+	SingleQuesLimitTime = remainSeconds;
+	singleTimerHandle = setInterval("singleQuesLimitTimeTimer()", 1000);
+}
+
+
+function toAnsweredView() {
+	submitForm(true, false,function(result) {
+		var url = window.location.href;
+		if (url && url.indexOf('answeredView') == -1) {
+			url = url.replace('?', '?answeredView=1&');
+		}
+		if (url && url.indexOf('tag=1') != -1) {
+			url = url.replace('tag=1', 'tag=0');
+		}
+		location.href = url;
+   });
+}
+
+
+function answeredViewAddRightWrongStyle(){
+	var questionWrap = $('#submitTest');
+	var quesId = questionWrap.find('input[name="questionId"]').val();
+	var type = questionWrap.find('input[name="type' + quesId + '"]').val();
+	if(type == 0 || type == 1){
+		var optionClass = '.num_option';
+		var successClass = 'success';
+		var failClass = 'fail';
+		if(type == 1){
+		  optionClass = '.num_option_dx';
+		  successClass = 'successquare';
+		  failClass = 'failquare';
+		}
+		var rightAnswer = $('.eye_over .yoursanswer').text() || '';
+		var rightAnswerArray = rightAnswer.trim().split('');
+		for(var i = 0; i < rightAnswerArray.length; i++){
+			$(optionClass + '[data="' + rightAnswerArray[i] + '"]').addClass(successClass);
+			$(optionClass + '[data="' + rightAnswerArray[i] + '"]').html('');
+		}
+		var stuAnswer = $('.eye_over .myanswer').text() || '';
+		var stuAnswerArray = stuAnswer.trim().split('');
+		for(var i = 0; i < stuAnswerArray.length; i++){
+			if($.inArray(stuAnswerArray[i],rightAnswerArray) == -1){
+				$(optionClass + '[data="' + stuAnswerArray[i] + '"]').addClass(failClass);
+				$(optionClass + '[data="' + stuAnswerArray[i] + '"]').html('');
+			}
+		}
+	}else if(type == 2 || type == 9 || type == 10){
+
+	}else if(type == 3){
+		var rightAnswer = $('.eye_over .yoursanswer').attr('data') || '';
+		$('.num_option[data="' + rightAnswer + '"]').addClass('success');
+		$('.num_option[data="' + rightAnswer + '"]').html('');
+		var stuAnswer = $('.eye_over .myanswer').attr('data') || '';
+		if(stuAnswer != rightAnswer){
+			$('.num_option[data="' + stuAnswer + '"]').addClass('fail');
+			$('.num_option[data="' + stuAnswer + '"]').html('');
+		}
+	}else if(type == 11){
+
+	}else if(type == 12 || type == 16 || type == 17 || type == 21){
+
+	}else if(type == 13){
+
+	}else if(type == 14){
+		$('.filling_answer').each(function(){
+			var rightAnswer = $(this).next().find('.yoursanswer').text() || '';
+			$(this).find('.num_option[data="' + rightAnswer + '"]').addClass('success');
+			$(this).find('.num_option[data="' + rightAnswer + '"]').html('');
+			var stuAnswer = $(this).next().find('.myanswer').text() || '';
+			if(rightAnswer != stuAnswer){
+				$(this).find('.num_option[data="' + stuAnswer + '"]').addClass('fail');
+				$(this).find('.num_option[data="' + stuAnswer + '"]').html('');
+			}
+		});
+	}else if(type == 15 || type == 19 || type == 25){
+		$('input[name="readCompreHension-childType"]').each(function(index){
+			var itemType = $(this).val();
+			if(itemType == 0 || itemType == 1){
+				var optionClass = '.num_option';
+				var successClass = 'success';
+				var failClass = 'fail';
+				if(itemType == 1){
+				  optionClass = '.num_option_dx';
+				  successClass = 'successquare';
+				  failClass = 'failquare';
+				}
+				var quesEle = $(this).next().next();
+				var rightAnswer = quesEle.next().find('.yoursanswer').text() || '';
+				var rightAnswerArray = rightAnswer.trim().split('');
+				for(var i = 0; i < rightAnswerArray.length; i++){
+					quesEle.find(optionClass + '[data="' + rightAnswerArray[i] + '"]').addClass(successClass);
+					quesEle.find(optionClass + '[data="' + rightAnswerArray[i] + '"]').html('');
+				}
+				var stuAnswer = quesEle.next().find('.myanswer').text() || '';
+				var stuAnswerArray = stuAnswer.trim().split('');
+				for(var i = 0; i < stuAnswerArray.length; i++){
+					if($.inArray(stuAnswerArray[i],rightAnswerArray) == -1){
+						quesEle.find(optionClass + '[data="' + stuAnswerArray[i] + '"]').addClass(failClass);
+						quesEle.find(optionClass + '[data="' + stuAnswerArray[i] + '"]').html('');
+					}
+				}
+			}else if(itemType == 2){
+
+
+			}else if(itemType == 3){
+				var quesEle = $(this).next().next().next();
+				var rightAnswer = quesEle.next().find('.yoursanswer').attr('data') || '';
+				quesEle.find('.num_option[data="' + rightAnswer + '"]').addClass('success');
+				quesEle.find('.num_option[data="' + rightAnswer + '"]').html('');
+				var stuAnswer = quesEle.next().find('.myanswer').attr('data') || '';
+				if(stuAnswer != rightAnswer){
+					quesEle.find('.num_option[data="' + stuAnswer + '"]').addClass('fail');
+					quesEle.find('.num_option[data="' + stuAnswer + '"]').html('');
+				}
+			}else{
+
+			}
+	  });
+	}else if(type == 20){
+		$('.B-answer-ct').each(function(){
+			var rightAnswer = $(this).next().find('.yoursanswer').text() || '';
+			var rightAnswerArray = rightAnswer.trim().split('');
+			for(var i = 0; i < rightAnswerArray.length; i++){
+				 $(this).find('.B-answerCon span[choice_name="' + rightAnswerArray[i] + '"]').addClass('success');
+				 $(this).find('.B-answerCon span[choice_name="' + rightAnswerArray[i] + '"]').html('&nbsp;');
+			}
+			var stuAnswer = $(this).next().find('.myanswer').text() || '';
+			var stuAnswerArray = stuAnswer.trim().split('');
+			for(var i = 0; i < stuAnswerArray.length; i++){
+				if($.inArray(stuAnswerArray[i],rightAnswerArray) == -1){
+					$(this).find('.B-answerCon span[choice_name="' + stuAnswerArray[i] + '"]').addClass('fail');
+					$(this).find('.B-answerCon span[choice_name="' + stuAnswerArray[i] + '"]').html('&nbsp; ');
+				}
+			}
+		});
+	}else{
+
+	}
+}
+
+$(document).ready(function(event) {
+	try {
+		$('.eyeopen').click(function () {
+			$('.eye_over').show();
+			$(this).css('display', 'none');
+		})
+		var answeredView = $('#answeredView').val();
+		if(answeredView == 1){
+			answeredViewAddRightWrongStyle();
+		}
+	} catch (err) {}
+});
+
+// 选词填空单题作答
+$(function () {
+	var questionWrap = $('#submitTest');
+	var quesId = questionWrap.find('input[name="questionId"]').val();
+	var fillinblankType = questionWrap.find('input[name="type' + quesId + '"]').val();
+	if (fillinblankType == 24) {
+		getFillinBlanksData();
+		var fillinBlanksContent = $('.fillBlanksChoose');
+		var fillinBlanksSource;
+		fillinBlanksContent.on("dragstart", function (e) {
+			fillinBlanksSource = e.target
+		});
+
+		fillinBlanksContent.on("dragover", function (e) {
+			e.preventDefault();
+		});
+
+		fillinBlanksContent.on("dragenter", function (e){
+			var dropNode = getFillinBlanksNode(e.target)
+			clearFillinBlanksStyle()
+			if (dropNode && dropNode.dataset.drop === 'copy') {
+				dropNode.classList.add('drop-over')
+			}
+		});
+
+		fillinBlanksContent.on("drop", function (e) {
+			var dropNode = getFillinBlanksNode(e.target)
+			clearFillinBlanksStyle()
+			if (dropNode && dropNode.dataset.drop === 'copy') {
+				var sourceValue = fillinBlanksSource.childNodes[0].nodeValue;
+				sourceValue = sourceValue.replace(/[&<">']/g, function(a, b) {
+					return {
+						'<' : '&lt;',
+						'&' : '&amp;',
+						'"' : '&quot;',
+						'>' : '&gt;',
+						"'" : '&#39;'
+					}[a];
+				});
+				dropNode.innerHTML = sourceValue;
+				dropNode.classList.add('hasFill');
+				dropNode.dataset.chooseName = fillinBlanksSource.dataset.chooseName;
+				dropNode.draggable = true;
+			}
+
+			if (fillinBlanksSource && fillinBlanksSource.dataset.drop == 'copy' && fillinBlanksSource !== dropNode) {
+				fillinBlanksSource.innerHTML = '';
+				fillinBlanksSource.classList.remove('hasFill');
+				fillinBlanksSource.dataset.chooseName = "";
+				fillinBlanksSource.draggable = false
+			}
+			getFillinBlanksData()
+		});
+	}
+})
+
+function getFillinBlanksData() {
+	var fillBlankList = [];
+	var fillBlanks = [];
+	for (var index = 0; index < $('.textTarget').length; index++) {
+		var ele = $('.textTarget')[index];
+		fillBlankList.push(ele.innerText)
+		var content = "";
+		if (typeof (ele.dataset.chooseName) != "undefined") {
+			content = ele.dataset.chooseName;
+		}
+		var fillBlank = { "name" : index + 1,"content": content };
+		fillBlanks.push(fillBlank);
+	}
+
+	for (var i = 0; i < $('.blanksBox span').length; i++) {
+		var e = $('.blanksBox span')[i];
+		var count = 0;
+		fillBlankList.forEach(function (item) {
+			if (item.trim() == e.childNodes[0].nodeValue.trim()) {
+				count++
+			}
+		})
+
+		var dropNodeVal = e.childNodes[0].nodeValue;
+		if (count == 0) {
+			e.innerText = dropNodeVal;
+		} else {
+			e.innerText = dropNodeVal;
+			var iEle = document.createElement("i");
+			iEle.innerText = count;
+			e.appendChild(iEle);
+		}
+	}
+	var questionId = $("#questionId").val();
+	var answerStr=JSON.stringify(fillBlanks);
+	$("#answer" + questionId).val(answerStr)
+
+}
+
+function checkQuestionAnswer(n){
+	try {
+		var showNext = $("#showNextPop").val();
+		var allowAnswerBack = $("#allowAnswerBack").val();
+		var forbidAnsweredAgain = $("#forbidAnsweredAgain").val();
+		if (showNext == "false" && forbidAnsweredAgain == 0) {
+			if (allowAnswerBack == 0) {
+				setStuAnswerOfSomeQues();
+				var unAnswerObj = checkUnAnswered();
+				var unAnswerTypeName = unAnswerObj.unAnswerTypeName;
+				if (unAnswerTypeName && unAnswerTypeName.length > 0) {
+					var tip = I18N.allowAnswerBackTips;
+					$("#submitConfirmPop .popWord").html(tip);
+					$("#submitConfirmPop .confirm").attr('onclick', 'getTheNextQuestion(1);');
+					$("#showNextPop").val("true");
+					$("#submitConfirmPop").fullFadeIn();
+					var isAccessibleCustomFid = $("#isAccessibleCustomFid").val()
+					if (isAccessibleCustomFid && isAccessibleCustomFid == "1") {
+						$("#submitConfirmPop").focus();
+					}
+					return true;
+				}
+			}
+		}
+		var targetQuestionGroupId = $("#nextQuestionGroupId").val() || 0;
+		if (n == -1) {
+			targetQuestionGroupId = $("#prevQuestionGroupId").val() || 0;
+		}
+		return groupPaperLimitTimeNextCheck(0, targetQuestionGroupId)
+	} catch (e) {
+		console.log(e)
+		return false;
+	}
+}
+
+function groupPaperLimitTimeNextCheck(n, targetGroupId) {
+	var groupLimitTimeType = $("#groupLimitTimeType").val() || 0;
+	var forbidGroupAnswerBack = $("#forbidGroupAnswerBack").val() || 0;
+	if (groupLimitTimeType > 0 || forbidGroupAnswerBack > 0) {
+		var thisQuestionGroupId = $("#thisQuestionGroupId").val() || 0;
+		if (targetGroupId == thisQuestionGroupId) {
+			return false;
+		}
+		var nextGroupPaperId = $("#nextGroupPaperId").val() || 0;
+		var checkGroupPop = $("#checkGroupPop").val() || 0;
+		if (nextGroupPaperId == targetGroupId) {
+			$("#groupStart").val(n)
+			groupPaperLimitTimePopShow("groupPaperLimitTimePop");
+		}
+		return checkGroupPop == 0;
+	}
+	return false;
+}
+
+function groupPaperLimitTimePopShow(popId) {
+	var groupLimitTimeType = $("#groupLimitTimeType").val() || 0;
+	var forbidGroupAnswerBack = $("#forbidGroupAnswerBack").val() || 0;
+	if (groupLimitTimeType == 0 && forbidGroupAnswerBack == 0) {
+		return ;
+	}
+	if (popId != 'groupPaperLimitTimeOverPop') {
+		$("#groupPaperLimitTimeOverPop").fullFadeOut();
+	}
+	$("#groupPaperLimitTimePop").fullFadeOut();
+	$("#groupPaperLimitTimeSubmitPop").fullFadeOut();
+	if (popId != "") {
+		$("#" + popId).fullFadeIn();
+	}
+	return false;
+}
+
+function loadElectronEnvAndFace(){
+	try{
+		if (!window.sessionStorage) {
+	        return false;
+	    }
+		var _monitorKey =  'ElectronMonitor_'  + $('#testUserRelationId').val() + "-" + $('#classId').val();
+		var monitorStr = sessionStorage.getItem(_monitorKey);
+		if(monitorStr == null || !monitorStr){
+			return false;
+		}
+		var monitorJSON  = JSON.parse(monitorStr);
+		var faceRecognitionObj = monitorJSON.faceRecognition || {};
+		var envDetectObj = monitorJSON.envDetect || {};
+		faceRecognitionObj.envDetect = envDetectObj;
+		return faceRecognitionObj;
+	}catch(err){
+		console.log(err);
+		return false;
+	}
+}
+
+
+function answerCardLocateCurrent(){
+   var zt = $("#rightHeight .current").position().top + 32;
+   var rh = $('#rightHeight').height();
+   var diff = zt - rh;
+   if(diff > 0){
+	   var scrollTop = diff +  rh / 2 ;
+	   $("#topicNumberScroll").animate({scrollTop: scrollTop + "px"},0);
+   }
+}
+
+
+$(function () {
+    var selftestMode = $('#selftestMode').val();
+    if (selftestMode == 1) {
+        $('.singleoption,.judgeoption').on('click', function () {
+            var answeredView = $('#answeredView').val();
+            if (answeredView != 1) {
+                toAnsweredView();
+            }
+        });
+    }
+	selfTestTopic();
+});
+
+function selfTestTopic () {
+	var selftestMode = $("#selftestMode").val()
+	if (selftestMode == 1) {
+		var answeredView = $("#answeredView").val();
+		var isAnswered = $("#isAnswered").val();
+		if ((answeredView && answeredView == 1) || (isAnswered && isAnswered == "true")) {
+			var courseId = $("#courseId").val();
+			var classId = $("#classId").val();
+			var cpi = $("#cpi").val();
+			var examId = $("#testPaperId").val();
+			var questionId = $("#questionId").val();
+			var answerId = $('#testUserRelationId').val();
+			$.ajax({
+				type: "get",
+				url: _HOST_CP2_ + "/mooc2/exam/selfTestTopic",
+				dataType: "html",
+				data: {
+					courseId: courseId,
+					classId: classId,
+					cpi: cpi,
+					examId: examId,
+					questionId: questionId,
+					answerId : answerId,
+					from : 0
+				},
+				success: function (data) {
+					$("#viewSelfTestQuestionTopic").html("")
+					$("#viewSelfTestQuestionTopic").html(data)
+				}
+			});
+		}
+	}
+}

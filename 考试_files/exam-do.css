@@ -1,0 +1,488 @@
+.timeDiv{height:80px;border-bottom:1px solid #F2F2F2;padding:0 24px;line-height:80px;font-size:24px;color:#646873}
+.timeDiv i{display:inline-block;width:20px;height:20px;vertical-align:middle;margin-right:10px;margin-top:-6px;}
+.btn_92_disable{width:92px;height:36px;background:url(../../../../../mooc2/images/btn_disable.png)no-repeat;box-shadow:0 4px 11px 0 rgba(86,82,255,0.17);border-radius:20px;}
+body{background: #f2f4f7}
+
+.fellback_icon{display:inline-block;width: 115px;height: 50px;background: #FFFFFF;box-shadow: 0px 2px 10px rgba(31, 35, 41, 0.1);border-radius: 32px;color: #3A8BFF;font-size: 16px;text-align:center;line-height:50px;position:fixed;bottom:10px;left: 10px;}
+.fellback_icon i{display:inline-block;width:24px;height:24px;vertical-align:middle; margin:-2px 8px 0 0}
+.fellback_icon i img{display:block;width:100%;height:100%}
+.fellback_icon:hover i,.fellback_icon:hover span{opacity:0.7}
+.Textcontent{display:block;width:380px;margin:0 auto;margin:26px auto;max-height:180px;box-sizing:border-box;border-radius: 4px;height:80px;line-height: 22px;font-size: 16px;color: #181E33;outline: none;border:1px solid #F2F2F2;padding:6px;font-family:"微软雅黑"}
+.Textcontent:hover{border:1px solid #CCDEF3;}
+.Textcontent:focus{background: #FFFFFF;border: 1px solid #FFFFFF;box-shadow: 0 0 4px 0px #75BAFF;border-radius: 4px;}
+#rebackPop .Marking{left:50%;top:50%;margin-left:-220px;margin-top:-180px}
+
+
+.fillBlanks {
+    /*width: 900px;*/
+    margin: 0 auto;
+    user-select: none;
+}
+
+.fillBlanks .title {
+    font-size: 16px;
+    color: #131B26;
+    padding-top: 16px;
+    font-weight: bold;
+}
+
+.fillBlanks .textContent {
+    color: #131B26;
+    font-size: 14px;
+    line-height: 22px;
+    margin: 0 20px;
+}
+
+.fillBlanks .textContent .gray {
+    color: #8A8B99;
+}
+
+.fillBlanks .textContent .textTarget {
+    display: inline-block;
+    padding: 3px 20px;
+    margin: 0 3px;
+    border-bottom: solid 1px #131B26;
+    min-height: 19px;
+    vertical-align: bottom;
+}
+
+.fillBlanks .textContent .textTarget.hasFill {
+    padding: 0;
+    color: #3A8BFF;
+    border: none;
+    cursor: move;
+    border-bottom: 1px solid rgba(255, 255, 255, 0);
+}
+
+.fillBlanks .textContent .textTarget.hasFill:hover {
+    border-bottom: solid 1px #3A8BFF;
+}
+
+.fillBlanks .tips {
+    color: #131B26;
+    font-size: 14px;
+    font-weight: 600;
+    line-height: 20px;
+    padding: 16px 0 10px 0;
+    margin: 0 20px;
+}
+
+.fillBlanks .blanksBox {
+    background: #F7F8FA;
+    border-radius: 4px;
+    padding: 14px 0 0 14px;
+    margin: 0 20px;
+}
+
+.fillBlanks .blanksBox span {
+    display: inline-block;
+    background: #fff;
+    border: solid 1px #DADFE5;
+    border-radius: 4px;
+    color: #3A8BFF;
+    line-height: 18px;
+    font-size: 12px;
+    padding: 6px 14px;
+    margin-bottom: 16px;
+    margin-right: 14px;
+    position: relative;
+    cursor: move;
+}
+
+.fillBlanks .blanksBox span:hover {
+    border: solid 1px #3A8BFF;
+}
+
+.fillBlanks .blanksBox span i {
+    min-width: 12px;
+    height: 12px;
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    font-size: 12px;
+    font-style: normal;
+    color: #ffffff;
+    background-color: #3A8BFF;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.fillBlanks .textContent .textTarget.drop-over {
+    border-bottom: 1px solid #3A8BFF;
+}
+
+.fillBlanks .blanksBox.drop-over {
+    background-color: rgba(0, 0, 0, 0.3);
+}
+
+.top-subNav {
+    pointer-events: none;
+}
+
+.top-subNav * {
+    pointer-events: initial;
+}
+
+
+
+.scratchPaperAndCalculator{
+  position: fixed;
+  right: 300px;
+  bottom: 40px;
+  z-index: 1000;
+}
+.scratchPaperAndCalculator .paperBtn,
+.scratchPaperAndCalculator .calculatorBtn{
+  float: left;
+  width:116px;
+  height: 50px;
+  background:#fff;
+  border-radius:32px;
+  box-shadow: 0px 2px 10px 0px #1F23291A;
+  margin-left:20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size:16px;
+  color:#3A8BFF;
+  cursor: pointer;
+}
+.scratchPaperAndCalculator .paperBtn:hover,
+.scratchPaperAndCalculator .calculatorBtn:hover{
+  opacity: .6;
+}
+.scratchPaperAndCalculator .paperBtn i,
+.scratchPaperAndCalculator .calculatorBtn i{
+  display: inline-block;
+  width: 24px;
+  height: 24px;
+  background:url(../../../../../mooc2/images/exam/scratchpaper/paperBtnIcon.png) no-repeat;
+  background-size: 100%;
+  margin-right: 10px;
+}
+.scratchPaperAndCalculator .calculatorBtn i{
+  background: url(../../../../../mooc2/images/exam/scratchpaper/calculatorBtnIcon.png) no-repeat;
+  background-size: 100%;
+}
+.scratchpaper_wrap{
+  position: fixed;
+  width:calc(100% - 560px);
+  height:calc(100vh - 40px);
+  top: 40px;
+  left: 280px;
+  background: rgba(0,0,0,.2);
+  z-index: 1000;
+}
+
+.scratchpaper_wrap #scratchpaper_canvas {
+  cursor: default;
+}
+.scratchpaper_wrap #scratchpaper_canvas.pencil-cursor {
+  cursor: url(../../../../../mooc2/images/exam/scratchpaper/pen.png) 0 20, auto;
+}
+.scratchpaper_wrap .paperToolbar{
+  position: absolute;
+  right:30px;
+  bottom:30px;
+  background: #FFFFFF;
+  box-shadow: 0px 2px 10px 0px #1F23291A;
+  border-radius: 12px;
+  padding:8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  width: 302px;
+}
+.scratchpaper_wrap .toobar{
+  height: 53px;
+  font-size:12px;
+  color:#666;
+  line-height: 17px;
+  cursor: pointer;
+  text-align: center;
+}
+.scratchpaper_wrap .toobar i{
+  display: block;
+  width:32px;
+  height: 32px;
+  border-radius:4px;
+  margin-bottom:4px;
+}
+.scratchpaper_wrap .toobar i.pencil{
+  background: url(../../../../../mooc2/images/exam/scratchpaper/pencil.png) no-repeat center;
+  background-size: 24px 24px;
+}
+.scratchpaper_wrap .toobar i.eraser{
+  background: url(../../../../../mooc2/images/exam/scratchpaper/eraser.png) no-repeat center;
+  background-size: 24px 24px;
+}
+.scratchpaper_wrap .toobar i.undo{
+  background: url(../../../../../mooc2/images/exam/scratchpaper/undo.png) no-repeat center;
+  background-size: 24px 24px;
+}
+.scratchpaper_wrap .toobar i.redo{
+  background: url(../../../../../mooc2/images/exam/scratchpaper/redo.png) no-repeat center;
+  background-size: 24px 24px;
+}
+.scratchpaper_wrap .toobar i.clear{
+  background: url(../../../../../mooc2/images/exam/scratchpaper/clear.png) no-repeat center;
+  background-size: 24px 24px;
+}
+.scratchpaper_wrap .toobar i.exit{
+  background: url(../../../../../mooc2/images/exam/scratchpaper/exit.png) no-repeat center;
+  background-size: 24px 24px;
+}
+
+.scratchpaper_wrap .toobar:hover i.pencil,.toobar.active i.pencil{
+  background: url(../../../../../mooc2/images/exam/scratchpaper/pencil_blue.png) no-repeat center #F0F4FF;
+  background-size: 24px 24px;
+}
+.scratchpaper_wrap .toobar:hover i.eraser,.toobar.active i.eraser{
+  background: url(../../../../../mooc2/images/exam/scratchpaper/eraser_blue.png) no-repeat center #F0F4FF;
+  background-size: 24px 24px;
+}
+.scratchpaper_wrap .toobar:hover i.undo,.toobar.active i.undo{
+  background: url(../../../../../mooc2/images/exam/scratchpaper/undo_blue.png) no-repeat center #F0F4FF;
+  background-size: 24px 24px;
+}
+.scratchpaper_wrap .toobar:hover i.redo,.toobar.active i.redo{
+  background: url(../../../../../mooc2/images/exam/scratchpaper/redo_blue.png) no-repeat center #F0F4FF;
+  background-size: 24px 24px;
+  opacity: 1;
+}
+.scratchpaper_wrap .toobar:hover i.clear,.toobar.active i.clear{
+  background: url(../../../../../mooc2/images/exam/scratchpaper/clear_blue.png) no-repeat center #F0F4FF;
+  background-size: 24px 24px;
+}
+.scratchpaper_wrap .toobar:hover i.exit,.toobar.active i.exit{
+  background: url(../../../../../mooc2/images/exam/scratchpaper/exit_blue.png) no-repeat center #F0F4FF;
+  background-size: 24px 24px;
+}
+
+.scratchpaper_wrap .toobar.disable {
+  cursor: not-allowed;
+  pointer-events: none;
+}
+.scratchpaper_wrap .toobar.disable i.pencil{
+  background: url(../../../../../mooc2/images/exam/scratchpaper/pencil_dis.png) no-repeat center ;
+  background-size: 24px 24px;
+}
+.scratchpaper_wrap .toobar.disable i.eraser{
+  background: url(../../../../../mooc2/images/exam/scratchpaper/eraser_dis.png) no-repeat center ;
+  background-size: 24px 24px;
+}
+.scratchpaper_wrap .toobar.disable i.undo{
+  background: url(../../../../../mooc2/images/exam/scratchpaper/undo_dis.png) no-repeat center;
+  background-size: 24px 24px;
+}
+.scratchpaper_wrap .toobar.disable i.redo{
+  background: url(../../../../../mooc2/images/exam/scratchpaper/redo_dis.png) no-repeat center ;
+  background-size: 24px 24px;
+}
+.scratchpaper_wrap .toobar.disable i.clear{
+  background: url(../../../../../mooc2/images/exam/scratchpaper/clear_dis.png) no-repeat center;
+  background-size: 24px 24px;
+}
+.scratchpaper_wrap .toobar.disable i.exit{
+  background: url(../../../../../mooc2/images/exam/scratchpaper/exit_dis.png) no-repeat center ;
+  background-size: 24px 24px;
+}
+.scratchpaper_wrap .toobar.disable i.exit{
+  background: url(../../../../../mooc2/images/exam/scratchpaper/exit_dis.png) no-repeat center ;
+  background-size: 24px 24px;
+}
+
+.fontSize24{
+    font-size:24px;
+}
+.fontSize24 .h2_subject{
+    font-size:28px;
+}
+.fontSize24 .team_tit span,
+.fontSize24 span.orangeColor{
+    font-size:20px; 
+}
+.fontSize24 .mark_info p,
+.fontSize24 .stem_answer,
+.fontSize24 .B-tit,
+.fontSize24 .fillBlanks .tips,
+.fontSize24 .type_tit
+{
+    font-size:24px;
+    line-height:1.5;
+
+}
+.fontSize24  .answer_p{
+  font-size:24px;
+  line-height: 1.5;
+   padding-top: 0;
+}
+.fontSize24 .topicNumber_checkbox{
+    font-size:24px;
+    line-height: 1.5;
+    height: auto;
+}
+.fontSize24 .tiankong{
+     font-size:24px;
+     width: auto;
+}
+
+.fontSize24 .fillBlanks .textContent *{
+    font-size:24px!important;
+    line-height: 1.6!important;
+}
+.fontSize24 .fillBlanks .blanksBox span i{
+    font-size:18px;
+    min-width: 18px;
+    height: 18px;
+}
+
+
+.fontSize24 .mark_dl dd p,
+.fontSize24 .mark_name,
+.fontSize24 .reader_answer_tit,
+.fontSize24 .fill_option,
+.fontSize24 .num_option,
+.fontSize24 .num_option_dx,
+.fontSize24 .numRight,
+.fontSize24 .topicNumber_list li,
+.fontSize24 .fillBlanks .textContent,
+.fontSize24 .fillBlanks .blanksBox span,
+.fontSize24 .eidt_button a,
+.fontSize24 .B-info,
+.fontSize24 .B-answerCon span,
+.fontSize24 .team_tit,
+.fontSize24 .selectBox p,
+.fontSize24 .selectBox ul li a,
+.fontSize24 .line_option,
+.fontSize24 .filling_num
+{
+    font-size:24px;
+}
+
+.fontSize24 .sub-button a{
+  font-size:22px;
+  width: 124px;
+}
+.fontSize24 .topicNumber_list li{
+   min-width: 34px;
+    height: 34px;
+}
+.fontSize24  .num_option,
+.fontSize24 .num_option_dx
+{
+    width: 32px;
+    height: 32px;
+    line-height: 28px
+}
+.fontSize24 .jb_btn_60{
+	width: 92px;
+	height: 36px;
+	background: url(../../../../../mooc2/images/jb_btn_92.png) no-repeat 0 0;
+	line-height: 32px;
+}
+
+.fontSize24 .nextDiv a{
+	width: 114px;
+	line-height: 32px;
+	font-size: 22px;
+}
+.fontSize24 .nextDiv a.jb_btn_92{
+	background: linear-gradient(322.22deg, #5A33FF -34.58%, #6CC7FF 132%);
+
+}
+ .fontSize24 .eidt_button a.jb_btn_92{
+	 width:104px;
+	 line-height:32px;
+	 background: linear-gradient(322.22deg, #5A33FF -34.58%, #6CC7FF 132%);
+ }
+ .fontSize24 .eidt_button a.jb_btn_92_disable{
+	 width:104px;
+	 line-height:32px;
+	 background: linear-gradient(322.22deg, #5A33FF -34.58%, #6CC7FF 132%);
+	 opacity:0.3;
+ }
+
+ .fontSize24 .subBack {
+   font-size: 24px;
+ }
+ 
+.fontSize24 .textarea26{
+    font-size:24px;
+}
+.fontSize24 .bomHet50 span i{
+    width:20px;
+    height:20px;
+}
+.fontSize24 .foldBox{
+  left:-40px;
+}
+.fontSize24 .foldBox .foldBtn{
+  width:40px;
+}
+.fontSize24 .foldBox .unfoldBtn{
+  width:40px;
+}
+
+.largeFontScale {
+    transform: scale(1.5);
+}
+
+/*口语测评题*/
+.marBom10 {
+    margin-bottom: 10px
+}
+
+.textresult {
+    font-size: 14px;
+    line-height: 22px;
+    margin-bottom: 16px;
+}
+
+.oralEval {
+    width: 200px;
+    height: 70px;
+    border: 1px solid #3A8BFF;
+    border-radius: 4px;
+    box-sizing: border-box;
+    text-align: center;
+    line-height: 68px;
+    color: #3A8BFF;
+    font-size: 14px;
+    margin-top: 20px;
+    cursor: pointer;
+}
+
+.oralEval::before {
+    content: '';
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    background: url(../../../../../images/phone/oraleval.png) no-repeat;
+    background-size: 100%;
+    vertical-align: middle;
+    margin: -2px 6px 0 0;
+}
+
+
+.previewBtn {
+    background: linear-gradient(322.22deg, #6a74fc -34.58%, #77a3fc 132%);
+    font-size: 14px;
+    cursor: pointer;
+    box-shadow: 0px 2px 9px 0px #67A1FF80;
+    color: #fff;
+    border-radius: 100px;
+    min-width:60px;
+    height: 28px;
+    line-height: 28px;
+    text-align: center;
+    padding:0 5px
+}
+.previewBtn:hover{
+    background: linear-gradient(322.22deg, #7e87fc -34.58%, #8eb6fd 132%);
+}
+.previewBtn:active{
+    background: linear-gradient(322.22deg, #6868fb -34.58%, #6a8bfc 132%);
+}
